@@ -2,12 +2,17 @@
 {
     public class CardTypesEnum
     {
-        public enum CardElementTypeEnum
+        public enum CardElementEnum
         {
             Water,
             Fire,
             Normal
         }
 
+        public enum CardTypeEnum
+        {
+            Monster,
+            Spell
+        }
     }
 }

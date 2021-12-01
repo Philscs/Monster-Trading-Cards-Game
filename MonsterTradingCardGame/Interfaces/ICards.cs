@@ -5,8 +5,9 @@ namespace MonsterTradingCardGame.Interfaces
 {
     public interface ICards
     {
-        public string CardName { get; set; }
-        public static double CardDamage { get; set; }
-        public CardTypesEnum.CardElementTypeEnum CardElementType { get; set; }
+        public static string CardName { get; set; }
+        protected static double CardDamage { get; set; }
+        protected static CardTypesEnum.CardElementEnum CardElement { get; set; }
+        protected static CardTypesEnum.CardTypeEnum CardType { get; set; }
     }
 }

@@ -1,0 +1,27 @@
+﻿Monster:
+	WaterGoblin
+	FireGoblin
+	RegularGoblin
+	WaterTroll
+	FireTroll
+	RegularTroll
+	WaterDragon
+	FireDragon
+	RegularDragon
+	WaterWizzard
+	FireWizzard
+	RegularWizzard
+	WaterOrks
+	FireOrks
+	RegularOrks
+	WaterElves
+	FireElves
+	RegularElves
+	Kraken
+	Knight
+	UndeadKnight
+
+Spells:
+	FireSpell
+	WaterSpell
+	RegularSpell
