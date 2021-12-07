@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using MonsterTradingCardGame.Classes;
 
 namespace MonsterTradingCardGame.Interfaces
 {
@@ -7,9 +8,14 @@ namespace MonsterTradingCardGame.Interfaces
         public string UniqueUsername { get; set; }
         public int Coins { get; set; }
         public int UserElo { get; set; }
-        public List<ICards> UserPlayCardStack { get; set; }
-        public List<ICards> UserAllCardStack { get; set; }
-        //History
+        public List<Cards> UserPlayCardStack { get; set; }
+        public List<Cards> UserAllCardStack { get; set; }
 
+        public void ChangeUserPlayCardStack();
+        public List<Cards> GetUserPlayCardStack();
+        public List<Cards> GetAiCardStack();
+        public List<Cards> GetUserAllCardStack();
+        public void PrintUserPlayCardDeck();
+        public void PrintUserInformation();
     }
 }

@@ -11,21 +11,11 @@ namespace MonsterTradingCardGame
     {
         static void Main(string[] args)
         {
+            
             //create Dictionary for Gamestats
             GameDictionary gameDictionary = new GameDictionary();
             gameDictionary.InitializeAllDictionaries();
             //Console.WriteLine(gameDictionary.CheckEffectiveGameDictionary("Water","Fire"));
-
-            //UserLogin
-            Console.WriteLine("Implement Login here");
-
-            //UserMenu
-            Console.WriteLine("Implement Menu for User here");
-
-            //Battle
-            Console.WriteLine("Implement Battle here");
-
-            Console.Clear();
 
             Console.WriteLine("Card Tests");
             CardTests cardTests = new CardTests();
@@ -38,7 +28,9 @@ namespace MonsterTradingCardGame
 
             //Console.WriteLine(card1.CardName);
             Menu menu = new Menu();
+           
             menu.UserMenu();
+           
         }
     }
 }

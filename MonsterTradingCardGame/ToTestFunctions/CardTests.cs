@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardGame.Classes;
 using MonsterTradingCardGame.Enum;
+using MonsterTradingCardGame.Interfaces;
 
 namespace MonsterTradingCardGame.ToTestFunctions
 {
@@ -33,6 +34,7 @@ namespace MonsterTradingCardGame.ToTestFunctions
             foreach (var card in TestCardsList)
             {
                 Console.WriteLine($"Index{i} -> {card.CardElement} {card.CardName}");
+                i++;
             }
         }
 

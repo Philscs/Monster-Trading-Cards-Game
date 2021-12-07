@@ -12,7 +12,11 @@ namespace MonsterTradingCardGame.Classes
     {
        public void Battle(IUser user1, IUser user2)
         {
-            throw new NotImplementedException();
+            Console.WriteLine($"implement fight between{user1.UniqueUsername} with Deck");
+            user1.PrintUserPlayCardDeck();
+            Console.WriteLine($"and {user2.UniqueUsername} with Deck");
+            user2.PrintUserPlayCardDeck();
+
         }
     }
 }

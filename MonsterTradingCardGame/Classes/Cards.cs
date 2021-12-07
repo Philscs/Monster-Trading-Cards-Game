@@ -8,7 +8,7 @@ using MonsterTradingCardGame.Interfaces;
 
 namespace MonsterTradingCardGame.Classes
 {
-    class Cards : ICards
+    public class Cards : Interfaces.ICards
     {
         public Cards()
         {
@@ -24,7 +24,7 @@ namespace MonsterTradingCardGame.Classes
         }
 
         public string CardName { get; set; }
-        public static double CardDamage { get; set; }
+        public double CardDamage { get; set; }
         public CardTypesEnum.CardElementEnum CardElement { get; set; }
         public CardTypesEnum.CardTypeEnum CardType { get; set; }
     }
