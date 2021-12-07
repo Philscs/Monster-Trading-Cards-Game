@@ -10,15 +10,22 @@ namespace MonsterTradingCardGame.Classes
 {
     class Cards : ICards
     {
-        public static string CardName { get; set; }
-        protected static double CardDamage { get; set; }
-        protected static CardTypesEnum.CardElementEnum CardElement { get; set; }
-        protected static CardTypesEnum.CardTypeEnum CardType { get; set; }
-
-        public int CheckEffectiveness(string element)
+        public Cards()
         {
 
-            return 0;
         }
+        public Cards(string name, double cardDamage, CardTypesEnum.CardElementEnum element,
+            CardTypesEnum.CardTypeEnum type)
+        {
+            CardName = name;
+            CardDamage = cardDamage;
+            CardElement = element;
+            CardType = type;
+        }
+
+        public string CardName { get; set; }
+        public static double CardDamage { get; set; }
+        public CardTypesEnum.CardElementEnum CardElement { get; set; }
+        public CardTypesEnum.CardTypeEnum CardType { get; set; }
     }
 }

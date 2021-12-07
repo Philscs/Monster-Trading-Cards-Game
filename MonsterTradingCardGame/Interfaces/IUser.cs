@@ -7,7 +7,8 @@ namespace MonsterTradingCardGame.Interfaces
         public string UniqueUsername { get; set; }
         public int Coins { get; set; }
         public int UserElo { get; set; }
-        public List<ICardStack> UserCardStack { get; set; }
+        public List<ICards> UserPlayCardStack { get; set; }
+        public List<ICards> UserAllCardStack { get; set; }
         //History
 
     }
