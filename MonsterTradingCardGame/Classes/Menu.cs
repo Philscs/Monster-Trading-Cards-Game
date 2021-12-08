@@ -145,7 +145,7 @@ namespace MonsterTradingCardGame.Classes
             {
                 userName = Console.ReadLine();
             }
-            User registerUser = new User(userName, 100, 1000, 0);
+            User registerUser = new User(userName, 20, 1000, 0);
             Console.WriteLine($"{userName} is now registered.");
             Console.ReadLine();
 

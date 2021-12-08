@@ -23,6 +23,17 @@ namespace MonsterTradingCardGame.Classes
             UserPlayCardStack = GetUserPlayCardStack();
             UserAllCardStack = GetUserAllCardStack();
         }
+
+        public User DeepCopy()
+        {
+            User other = (User) this.MemberwiseClone();
+            other.UniqueUsername = String.Copy(UniqueUsername);
+            other.Coins = Coins;
+            other.UserElo = UserElo;
+            other.UserPlayCardStack = new List<Cards>(UserPlayCardStack);
+            other.UserAllCardStack = new List<Cards>(UserAllCardStack);
+            return other;
+        }
         //only for testing
         //Register User
         public User(string unique, int coins, int userElo, int Register)
@@ -49,6 +60,8 @@ namespace MonsterTradingCardGame.Classes
         public int UserElo { get; set; }
         public List<Cards> UserPlayCardStack { get; set; }
         public List<Cards> UserAllCardStack { get; set; }
+
+        private const int IndexSize = 4;
         
         public void ChangeUserPlayCardStack()
         {
@@ -58,7 +71,7 @@ namespace MonsterTradingCardGame.Classes
             int chosenCard;
             int cardCount = 0;
             //get Cards from DB not from TestCards
-            while (cardCount < 4)
+            while (cardCount < IndexSize)
             {
                 PrintUserAllCardDeck();
                 Console.Write("Choose Cards by there Index:");
@@ -79,7 +92,7 @@ namespace MonsterTradingCardGame.Classes
                 UserPlayCardStack.Add(tmpCardsList.ElementAt(chosenCard));
                 tmpCardsList.RemoveAt(chosenCard);
                 Console.Clear();
-                Console.WriteLine(chosenCard < 4 ? "Your Deck at the Moment:" : "Your chosen Deck is:");
+                Console.WriteLine(chosenCard < IndexSize ? "Your Deck at the Moment:" : "Your chosen Deck is:");
                 PrintUserPlayCardDeck();
                 Console.WriteLine("Press any key to continue");
                 Console.ReadLine();
@@ -162,7 +175,7 @@ namespace MonsterTradingCardGame.Classes
             
             while (!quitManager)
             {
-                Console.WriteLine($" Print\n Change\n Quit");
+                Console.WriteLine($" Print  -> to see your chosen Deck\n Change -> to change your chosen Deck\n All    -> to see all your Cards\n Quit   -> Deck-Manager & go back to the Main-Menu");
                 userInput = null;
                 Console.Write("Input: ");
                 while (userInput == null)
@@ -185,7 +198,28 @@ namespace MonsterTradingCardGame.Classes
                 }
                 else if (userInput.Equals("Change"))
                 {
-                    ChangeUserPlayCardStack();
+                    if (UserAllCardStack != null)
+                    {
+                        ChangeUserPlayCardStack();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"You have no Cards\nPlease buy some Packs in the Shop\n");
+                        Console.ReadLine();
+                    }
+                }
+                else if (userInput.Equals("All"))
+                {
+                    if (UserAllCardStack != null)
+                    {
+                        PrintUserAllCardDeck();
+                        Console.ReadLine();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"You have no Cards\nPlease buy some Packs in the Shop\n");
+                        Console.ReadLine();
+                    }
                 }
                 else if (userInput.Equals("Quit"))
                 {
