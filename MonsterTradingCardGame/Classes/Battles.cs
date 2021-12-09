@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardGame.Interfaces;
 using MonsterTradingCardGame.Classes;
+using MonsterTradingCardGame.Dictionary;
 using MonsterTradingCardGame.Enum;
 
 namespace MonsterTradingCardGame.Classes
@@ -42,6 +43,8 @@ namespace MonsterTradingCardGame.Classes
                 //checks multiplier for cards DMG
                 gameCard1Dmg = playCard1.CardDamage * CheckDmgMulti(playCard1, playCard2);
                 gameCard2Dmg = playCard2.CardDamage * CheckDmgMulti(playCard2, playCard1);
+                Console.WriteLine($"DMG was {playCard1.CardDamage}, is now {gameCard1Dmg}");
+                Console.WriteLine($"DMG was {playCard2.CardDamage}, is now {gameCard2Dmg}");
 
                 if (gameCard1Dmg > gameCard2Dmg)
                 {
@@ -83,18 +86,39 @@ namespace MonsterTradingCardGame.Classes
 
         }
 
-        private int CheckDmgMulti(Cards card1, Cards card2)
+        private double CheckDmgMulti(Cards card1, Cards card2)
         {
-            int multi = 1;
-            if (card1.CardType != CardTypesEnum.CardTypeEnum.Monster &&
+            GameDictionary gameDictionary = new GameDictionary();
+            gameDictionary.InitializeAllDictionaries();
+
+            double multi = 1;
+            if (card1.CardType != CardTypesEnum.CardTypeEnum.Monster ||
                 card2.CardType != CardTypesEnum.CardTypeEnum.Monster)
             {
-                if (expr)
+                Console.WriteLine("One Card is a spell");
+                if (gameDictionary._effectiveGameDictionary[$"{card1.CardElement}"] == card2.CardElement.ToString())
                 {
-                    
+                    Console.WriteLine($"{card1.CardName} {card1.CardElement}  is effective vs {card2.CardName} {card2.CardElement}");
+                    multi = 2;
+                }else if (gameDictionary._notEffectiveGameDictionary[$"{card1.CardElement}"] == $"{card2.CardElement}")
+                {
+                    Console.WriteLine($"{card1.CardName} {card1.CardElement}  is NOT effective vs {card2.CardName} {card2.CardElement}");
+                    multi = 0.5;
                 }
             }
 
+            if (gameDictionary._notEffectiveGameDictionary.ContainsKey($"{card1.CardName}"))
+            {
+                Console.WriteLine("One Card has a Special Trait");
+                if (gameDictionary._notspecialGameDictionary[$"{card1.CardName}"] == card2.CardName ||
+                    gameDictionary._notspecialGameDictionary[$"{card1.CardName}"] ==
+                    card2.CardElement + card2.CardName)
+                {
+                    Console.WriteLine(
+                        $"{card1.CardName} {card1.CardElement}  has NO CHANCE vs {card2.CardName} {card2.CardElement}");
+                    multi = 0;
+                }
+            }
             return multi;
         }
     }

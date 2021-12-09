@@ -105,7 +105,7 @@ namespace MonsterTradingCardGame.ToTestFunctions
             CardTests card20 = new CardTests("Knight", 195, CardTypesEnum.CardElementEnum.Normal,
                 CardTypesEnum.CardTypeEnum.Monster);
             TestCardsList.Add(card20);
-            CardTests card21 = new CardTests("UndeadKnight", 888, CardTypesEnum.CardElementEnum.Fire,
+            CardTests card21 = new CardTests("UndeadKnight", 666, CardTypesEnum.CardElementEnum.Fire,
                 CardTypesEnum.CardTypeEnum.Monster);
             TestCardsList.Add(card21);
             CardTests card22 = new CardTests("Spell", 100, CardTypesEnum.CardElementEnum.Water,

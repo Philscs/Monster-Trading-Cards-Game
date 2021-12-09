@@ -8,10 +8,10 @@ namespace MonsterTradingCardGame.Dictionary
 {
     class GameDictionary
     {
-        private Dictionary<string, string> _effectiveGameDictionary = new Dictionary<string, string>();
-        private Dictionary<string, string> _notEffectiveGameDictionary = new Dictionary<string, string>();
-        private Dictionary<string, string> _notspecialGameDictionary = new Dictionary<string, string>();
-        private Dictionary<string, string> _specialGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> _effectiveGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> _notEffectiveGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> _notspecialGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> _specialGameDictionary = new Dictionary<string, string>();
 
         public void InitializeAllDictionaries()
         {
