@@ -8,10 +8,10 @@ namespace MonsterTradingCardGame.Dictionary
 {
     class GameDictionary
     {
-        public Dictionary<string, string> _effectiveGameDictionary = new Dictionary<string, string>();
-        public Dictionary<string, string> _notEffectiveGameDictionary = new Dictionary<string, string>();
-        public Dictionary<string, string> _notspecialGameDictionary = new Dictionary<string, string>();
-        public Dictionary<string, string> _specialGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> EffectiveGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> NotEffectiveGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> NotSpecialGameDictionary = new Dictionary<string, string>();
+        public Dictionary<string, string> SpecialGameDictionary = new Dictionary<string, string>();
 
         public void InitializeAllDictionaries()
         {
@@ -23,33 +23,36 @@ namespace MonsterTradingCardGame.Dictionary
 
         private void InitializeEffectiveDictionary()
         {
-            this._effectiveGameDictionary.Add("Water", "Fire");
-            this._effectiveGameDictionary.Add("Fire", "Normal");
-            this._effectiveGameDictionary.Add("Normal", "Water");
+            this.EffectiveGameDictionary.Add("Water", "Fire");
+            this.EffectiveGameDictionary.Add("Fire", "Normal");
+            this.EffectiveGameDictionary.Add("Normal", "Water");
         }
         private void InitializeNotEffectiveDictionary()
         {
-            this._notEffectiveGameDictionary.Add("Water", "Normal");
-            this._notEffectiveGameDictionary.Add("Fire", "Water");
-            this._notEffectiveGameDictionary.Add("Normal", "Fire");
+            this.NotEffectiveGameDictionary.Add("Water", "Normal");
+            this.NotEffectiveGameDictionary.Add("Fire", "Water");
+            this.NotEffectiveGameDictionary.Add("Normal", "Fire");
         }
 
         private void InitializeNoSpecialtiesDictionary()
         {
-            this._notspecialGameDictionary.Add("Goblin", "Dragon");
-            this._notspecialGameDictionary.Add("Orc", "Wizard");
-            this._notspecialGameDictionary.Add("Knights", "Water Spell");
-            this._notspecialGameDictionary.Add("Spell", "Kraken");
-            this._notspecialGameDictionary.Add("Dragon", "Fire Elves");
+            this.NotSpecialGameDictionary.Add("Goblin", "Dragon");
+            this.NotSpecialGameDictionary.Add("Orc", "Wizard");
+            this.NotSpecialGameDictionary.Add("Knights", "Water Spell");
+            this.NotSpecialGameDictionary.Add("Spell", "Kraken");
+            this.NotSpecialGameDictionary.Add("Dragon", "Fire Elves");
+
+
+            this.NotSpecialGameDictionary.Add("Wizard", "Cock");
         }
 
         private void InitializeSpecialtiesDictionary()
         {
-            this._specialGameDictionary.Add("Dragon", "Goblin");
-            this._specialGameDictionary.Add("Wizard", "Orc");
-            this._specialGameDictionary.Add("Water Spell", "Knights");
-            this._specialGameDictionary.Add("Kraken", "Spell"); 
-            this._specialGameDictionary.Add("Fire Elves", "Dragon");
+            this.SpecialGameDictionary.Add("Dragon", "Goblin");
+            this.SpecialGameDictionary.Add("Wizard", "Orc");
+            this.SpecialGameDictionary.Add("Water Spell", "Knights");
+            this.SpecialGameDictionary.Add("Kraken", "Spell"); 
+            this.SpecialGameDictionary.Add("Fire Elves", "Dragon");
         }
     }
 }

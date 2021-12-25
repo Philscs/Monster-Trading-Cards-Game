@@ -96,22 +96,22 @@ namespace MonsterTradingCardGame.Classes
                 card2.CardType != CardTypesEnum.CardTypeEnum.Monster)
             {
                 Console.WriteLine("One Card is a spell");
-                if (gameDictionary._effectiveGameDictionary[$"{card1.CardElement}"] == card2.CardElement.ToString())
+                if (gameDictionary.EffectiveGameDictionary[$"{card1.CardElement}"] == card2.CardElement.ToString())
                 {
                     Console.WriteLine($"{card1.CardName} {card1.CardElement}  is effective vs {card2.CardName} {card2.CardElement}");
                     multi = 2;
-                }else if (gameDictionary._notEffectiveGameDictionary[$"{card1.CardElement}"] == $"{card2.CardElement}")
+                }else if (gameDictionary.NotEffectiveGameDictionary[$"{card1.CardElement}"] == $"{card2.CardElement}")
                 {
                     Console.WriteLine($"{card1.CardName} {card1.CardElement}  is NOT effective vs {card2.CardName} {card2.CardElement}");
                     multi = 0.5;
                 }
             }
 
-            if (gameDictionary._notEffectiveGameDictionary.ContainsKey($"{card1.CardName}"))
+            if (gameDictionary.NotSpecialGameDictionary.ContainsKey($"{card1.CardName}"))
             {
                 Console.WriteLine("One Card has a Special Trait");
-                if (gameDictionary._notspecialGameDictionary[$"{card1.CardName}"] == card2.CardName ||
-                    gameDictionary._notspecialGameDictionary[$"{card1.CardName}"] ==
+                if (gameDictionary.NotSpecialGameDictionary[$"{card1.CardName}"] == card2.CardName ||
+                    gameDictionary.NotSpecialGameDictionary[$"{card1.CardName}"] ==
                     card2.CardElement + card2.CardName)
                 {
                     Console.WriteLine(
@@ -119,6 +119,7 @@ namespace MonsterTradingCardGame.Classes
                     multi = 0;
                 }
             }
+
             return multi;
         }
     }

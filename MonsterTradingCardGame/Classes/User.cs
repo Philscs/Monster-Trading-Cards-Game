@@ -15,11 +15,12 @@ namespace MonsterTradingCardGame.Classes
         {
 
         }
-        public User(string unique, int coins, int userElo)
+        public User(string unique, int coins, int userElo, string userPassword)
         {
             UniqueUsername = unique;
             Coins = coins;
             UserElo = userElo;
+            password = userPassword;
             UserPlayCardStack = GetUserPlayCardStack();
             UserAllCardStack = GetUserAllCardStack();
         }
@@ -30,17 +31,19 @@ namespace MonsterTradingCardGame.Classes
             other.UniqueUsername = String.Copy(UniqueUsername);
             other.Coins = Coins;
             other.UserElo = UserElo;
+            other.password = password;
             other.UserPlayCardStack = new List<Cards>(UserPlayCardStack);
             other.UserAllCardStack = new List<Cards>(UserAllCardStack);
             return other;
         }
         //only for testing
         //Register User
-        public User(string unique, int coins, int userElo, int Register)
+        public User(string unique, int coins, int userElo,string userPassword, int Register)
         {
             UniqueUsername = unique;
             Coins = coins;
             UserElo = userElo;
+            password = userPassword;
             UserPlayCardStack = null;
             UserAllCardStack = null;
 
@@ -58,6 +61,8 @@ namespace MonsterTradingCardGame.Classes
         public string UniqueUsername { get; set; }
         public int Coins { get; set; }
         public int UserElo { get; set; }
+        public string password { get; set; }
+
         public List<Cards> UserPlayCardStack { get; set; }
         public List<Cards> UserAllCardStack { get; set; }
 

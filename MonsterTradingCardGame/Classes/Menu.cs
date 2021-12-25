@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using MonsterTradingCardGame.PostgreDB;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace MonsterTradingCardGame.Classes
 {
     class Menu
     {
         private string _userInput;
+        DBConn db = new DBConn();
         public void UserMenu()
         {
             User user = new User();
@@ -71,22 +73,52 @@ namespace MonsterTradingCardGame.Classes
         public User UserLogin()
         {
             string userName = null;
+            //get Username
             Console.WriteLine("Enter Username:");
             while (userName == null)
             {
                 userName = Console.ReadLine();
             }
-            User loginUser = new User(userName, 88, 1337);
-            Console.WriteLine($"{userName} is now logged in.");
+            //get Password from User but only show '*'
+            Console.WriteLine("Enter Password:");
+            var pass = string.Empty;
+            ConsoleKey key;
+            do
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+                key = keyInfo.Key;
+
+                if (key == ConsoleKey.Backspace && pass.Length > 0)
+                {
+                    Console.Write("\b \b");
+                    pass = pass[0..^1];
+                }
+                else if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    Console.Write("*");
+                    pass += keyInfo.KeyChar;
+                }
+            } while (key != ConsoleKey.Enter);
+
+            //checks if username is in DB and if it is, check if pwd matches with BCrypt
+            User user = db.LoginUser(userName, pass);
+
+            if (user != null)
+            {
+                Console.WriteLine($"\n{userName} is now logged in.");
+                Console.ReadLine();
+
+                return user;
+            }
+            Console.WriteLine($"\nWrong Credentials to log in, try again!");
             Console.ReadLine();
 
-
-            return loginUser;
+            return null;
         }
 
         public void UserDeck(User user)
         {
-            if (user.UniqueUsername != null)
+            if (user != null)
             {
                 user.DeckManager();
             }
@@ -99,7 +131,7 @@ namespace MonsterTradingCardGame.Classes
 
         public void UserBattle(User user)
         {
-            if (user.UniqueUsername != null)
+            if (user != null)
             {
                 User aiUser = new User("AI");
                 Battles battles = new Battles();
@@ -120,7 +152,7 @@ namespace MonsterTradingCardGame.Classes
 
         public void UserProfile(User user)
         {
-            if (user.UniqueUsername != null)
+            if (user != null)
             {
                 user.PrintUserInformation();
             }
@@ -140,17 +172,50 @@ namespace MonsterTradingCardGame.Classes
         public User UserRegister()
         {
             string userName = null;
+            //get Username
             Console.WriteLine("Enter Username:");
             while (userName == null)
             {
                 userName = Console.ReadLine();
             }
-            User registerUser = new User(userName, 20, 1000, 0);
-            Console.WriteLine($"{userName} is now registered.");
+            //get Password from User but only show '*'
+            Console.WriteLine("Enter Password:");
+            var pass = string.Empty;
+            ConsoleKey key;
+            do
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+                key = keyInfo.Key;
+
+                if (key == ConsoleKey.Backspace && pass.Length > 0)
+                {
+                    Console.Write("\b \b");
+                    pass = pass[0..^1];
+                }
+                else if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    Console.Write("*");
+                    pass += keyInfo.KeyChar;
+                }
+            } while (key != ConsoleKey.Enter);
+
+            //hash the pwd with BCrypt
+            var passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
+
+            User registerUser = new User(userName, 20, 1000, passwordHash, 0);
+
+            bool reg = db.RegisterUser(registerUser);
+            if (reg)
+            {
+                Console.WriteLine($"\n{userName} is now registered.");
+                Console.ReadLine();
+                return registerUser;
+            }
+
+            Console.WriteLine($"\nRegistration failed, try again with a different Username");
             Console.ReadLine();
 
-            return registerUser;
-
+            return null;
         }
 
         public void NoUser()
