@@ -14,15 +14,17 @@ namespace MonsterTradingCardGame.Classes
         {
 
         }
-        public Cards(string name, double cardDamage, CardTypesEnum.CardElementEnum element,
+        public Cards(int cardID, string name, double cardDamage, CardTypesEnum.CardElementEnum element,
             CardTypesEnum.CardTypeEnum type)
         {
+            CardID = cardID;
             CardName = name;
             CardDamage = cardDamage;
             CardElement = element;
             CardType = type;
         }
 
+        public int CardID { get; set; }
         public string CardName { get; set; }
         public double CardDamage { get; set; }
         public CardTypesEnum.CardElementEnum CardElement { get; set; }

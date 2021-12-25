@@ -15,7 +15,6 @@ namespace MonsterTradingCardGame.Interfaces
 
         public void ChangeUserPlayCardStack();
         public List<Cards> GetUserPlayCardStack();
-        public List<Cards> GetAiCardStack();
         public List<Cards> GetUserAllCardStack();
         public void PrintUserPlayCardDeck();
         public void PrintUserInformation();

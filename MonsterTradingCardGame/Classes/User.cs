@@ -5,22 +5,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MonsterTradingCardGame.Interfaces;
-using MonsterTradingCardGame.ToTestFunctions;
+using MonsterTradingCardGame.PostgreDB;
 
 namespace MonsterTradingCardGame.Classes
 {
     class User : IUser
     {
+        private DBConn db = new DBConn();
         public User()
         {
 
         }
-        public User(string unique, int coins, int userElo, string userPassword)
+        public User(int userID, string unique, int coins, int userElo, string userPassword, int userWins, int userLoses)
         {
+            UserID = userID;
             UniqueUsername = unique;
             Coins = coins;
             UserElo = userElo;
             password = userPassword;
+            Wins = userWins;
+            Loses = userLoses;
             UserPlayCardStack = GetUserPlayCardStack();
             UserAllCardStack = GetUserAllCardStack();
         }
@@ -36,32 +40,29 @@ namespace MonsterTradingCardGame.Classes
             other.UserAllCardStack = new List<Cards>(UserAllCardStack);
             return other;
         }
-        //only for testing
+
         //Register User
-        public User(string unique, int coins, int userElo,string userPassword, int Register)
+        public User(string unique, string userPassword)
         {
+            UserID = 0;
             UniqueUsername = unique;
-            Coins = coins;
-            UserElo = userElo;
+            Coins = 20;
+            UserElo = 1000;
             password = userPassword;
+            Wins = 0;
+            Loses = 0;
             UserPlayCardStack = null;
             UserAllCardStack = null;
-
         }
 
-        //(AI User)
-        public User(string name)
-        {
-            UniqueUsername = name;
-            Coins = 0;
-            UserElo = 1000;
-            UserPlayCardStack = GetAiCardStack();
-            UserAllCardStack = GetUserAllCardStack();
-        }
+        public int UserID { get; set; }
         public string UniqueUsername { get; set; }
         public int Coins { get; set; }
         public int UserElo { get; set; }
         public string password { get; set; }
+        public int Wins { get; set; }
+        public int Loses{ get; set; }
+        
 
         public List<Cards> UserPlayCardStack { get; set; }
         public List<Cards> UserAllCardStack { get; set; }
@@ -91,7 +92,6 @@ namespace MonsterTradingCardGame.Classes
                         chosenCard = 0;
                     }
                 }
-
                 cardCount++;
 
                 UserPlayCardStack.Add(tmpCardsList.ElementAt(chosenCard));
@@ -105,42 +105,12 @@ namespace MonsterTradingCardGame.Classes
         }
         public List<Cards> GetUserPlayCardStack()
         {
-            CardTests cardTests = new CardTests();
-
-            cardTests.InitializeCards();
-
-            List<Cards> tempList = new List<Cards>
-            {
-                cardTests.GetCard(1),
-                cardTests.GetCard(23),
-                cardTests.GetCard(20),
-                cardTests.GetCard(9)
-            };
-            return tempList;
+            return db.GetUserPlayCardStack(this);
         } 
-        //only for Testing, that AI Player has Cards!!
-        public List<Cards> GetAiCardStack()
-        {
-            CardTests cardTests = new CardTests();
-
-            cardTests.InitializeCards();
-
-            List<Cards> tempList = new List<Cards>
-            {
-                cardTests.GetCard(23),
-                cardTests.GetCard(22),
-                cardTests.GetCard(13),
-                cardTests.GetCard(11)
-            };
-            return tempList;
-        }
+        
         public List<Cards> GetUserAllCardStack()
         {
-            CardTests cardTests = new CardTests();
-
-            cardTests.InitializeCards();
-
-            return cardTests.TestCardsList;
+            return db.GetUserAllCardStack(this); ;
         }
 
         public void PrintUserPlayCardDeck()
@@ -167,8 +137,9 @@ namespace MonsterTradingCardGame.Classes
 
         public void PrintUserInformation()
         {
-            Console.WriteLine($"{UniqueUsername} is logged in with an Elo of {UserElo}...");
-            Console.WriteLine($"{UniqueUsername} has {Coins} Coins...");
+            Console.Clear();
+
+            Console.WriteLine($"Profile:\n Username: {UniqueUsername}\n Elo:      {UserElo}\n Coins:    {Coins}\n Wins:     {Wins}\n Loses:    {Loses}\n Win-%:    {(Loses > 0 ? Wins/Loses : 0)}");
         }
 
         public void DeckManager()

@@ -13,7 +13,7 @@ namespace MonsterTradingCardGame.Classes
         DBConn db = new DBConn();
         public void UserMenu()
         {
-            User user = new User();
+            User user = null;
             bool exit = true;
             do
             {
@@ -133,7 +133,7 @@ namespace MonsterTradingCardGame.Classes
         {
             if (user != null)
             {
-                User aiUser = new User("AI");
+                User aiUser = new User(/*"AI"*/);
                 Battles battles = new Battles();
                 if (user.UserPlayCardStack is {Count: 4})
                 {
@@ -202,16 +202,17 @@ namespace MonsterTradingCardGame.Classes
             //hash the pwd with BCrypt
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(pass);
 
-            User registerUser = new User(userName, 20, 1000, passwordHash, 0);
-
-            bool reg = db.RegisterUser(registerUser);
-            if (reg)
+            User registerUser = new User(userName, passwordHash);
+            User registered = db.RegisterUser(registerUser);
+            
+            if (registered != null && registered.UserID != 0)
             {
-                Console.WriteLine($"\n{userName} is now registered.");
+                Console.WriteLine($"\n{registered.UniqueUsername} is now registered.");
+                //Console.WriteLine($"with id: {registered.UserID}");
                 Console.ReadLine();
-                return registerUser;
+                return registered;
             }
-
+            
             Console.WriteLine($"\nRegistration failed, try again with a different Username");
             Console.ReadLine();
 
