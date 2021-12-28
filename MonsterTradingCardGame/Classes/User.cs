@@ -32,7 +32,7 @@ namespace MonsterTradingCardGame.Classes
         public User DeepCopy()
         {
             User other = (User) this.MemberwiseClone();
-            other.UniqueUsername = String.Copy(UniqueUsername);
+            other.UniqueUsername = UniqueUsername;
             other.Coins = Coins;
             other.UserElo = UserElo;
             other.password = password;
@@ -41,7 +41,7 @@ namespace MonsterTradingCardGame.Classes
             return other;
         }
 
-        //Register User
+        //to Register User
         public User(string unique, string userPassword)
         {
             UserID = 0;
@@ -62,7 +62,6 @@ namespace MonsterTradingCardGame.Classes
         public string password { get; set; }
         public int Wins { get; set; }
         public int Loses{ get; set; }
-        
 
         public List<Cards> UserPlayCardStack { get; set; }
         public List<Cards> UserAllCardStack { get; set; }
@@ -71,18 +70,18 @@ namespace MonsterTradingCardGame.Classes
         
         public void ChangeUserPlayCardStack()
         {
-            List<Cards> tmpCardsList = new List<Cards>();
-            tmpCardsList = UserAllCardStack;
+            List<Cards> tmpCardsList = db.GetUserAllCardStack(this);
             UserPlayCardStack.Clear();
             int chosenCard;
             int cardCount = 0;
             //get Cards from DB not from TestCards
             while (cardCount < IndexSize)
             {
-                PrintUserAllCardDeck();
+                Console.Clear();
+                PrintAllCardDeck(tmpCardsList);
                 Console.Write("Choose Cards by there Index:");
-                chosenCard = 0;
-                while (chosenCard == 0)
+                chosenCard = -1;
+                while (chosenCard < 0)
                 {
                     string input = Console.ReadLine();
                     Int32.TryParse(input, out chosenCard);
@@ -97,10 +96,16 @@ namespace MonsterTradingCardGame.Classes
                 UserPlayCardStack.Add(tmpCardsList.ElementAt(chosenCard));
                 tmpCardsList.RemoveAt(chosenCard);
                 Console.Clear();
-                Console.WriteLine(chosenCard < IndexSize ? "Your Deck at the Moment:" : "Your chosen Deck is:");
-                PrintUserPlayCardDeck();
+                Console.WriteLine(cardCount < IndexSize ? "Your Deck at the Moment:" : "Your chosen Deck is:");
+                PrintAllCardDeck(UserPlayCardStack);
                 Console.WriteLine("Press any key to continue");
                 Console.ReadLine();
+            }
+
+            if (!db.ChangePlayDeck(this))
+            {
+                Console.WriteLine("An Error occurred!\nPlease build a new Deck!");
+                UserPlayCardStack.Clear();
             }
         }
         public List<Cards> GetUserPlayCardStack()
@@ -113,21 +118,10 @@ namespace MonsterTradingCardGame.Classes
             return db.GetUserAllCardStack(this); ;
         }
 
-        public void PrintUserPlayCardDeck()
+        public void PrintAllCardDeck(List<Cards> deck)
         {
             int i = 0;
-            foreach (var card in UserPlayCardStack)
-            {
-                Console.WriteLine($"Index {i} -> {card.CardElement} {card.CardName}\n Dmg: {card.CardDamage}");
-                i++;
-            }
-
-        }
-
-        public void PrintUserAllCardDeck()
-        {
-            int i = 0;
-            foreach (var card in UserAllCardStack)
+            foreach (var card in deck)
             {
                 Console.WriteLine($"Index {i} -> {card.CardElement} {card.CardName}\n Dmg: {card.CardDamage}");
                 i++;
@@ -139,7 +133,17 @@ namespace MonsterTradingCardGame.Classes
         {
             Console.Clear();
 
-            Console.WriteLine($"Profile:\n Username: {UniqueUsername}\n Elo:      {UserElo}\n Coins:    {Coins}\n Wins:     {Wins}\n Loses:    {Loses}\n Win-%:    {(Loses > 0 ? Wins/Loses : 0)}");
+            Console.WriteLine($"Profile:\n Username: {UniqueUsername}\n Elo:      {UserElo}\n Coins:    {Coins}\n Wins:     {Wins}\n Loses:    {Loses}");
+            int percentage;
+            if (Wins == 0 && Loses == 0)
+            {
+                percentage = 0;
+            }
+            else
+            {
+                percentage = Wins / (Wins + Loses) * 100;
+            }
+            Console.WriteLine($" Win-%:    {percentage}");
         }
 
         public void DeckManager()
@@ -161,19 +165,21 @@ namespace MonsterTradingCardGame.Classes
 
                 if (userInput.Equals("Print"))
                 {
-                    if (UserPlayCardStack != null)
+                    Console.Clear();
+                    if (UserPlayCardStack is {Count: 4})
                     {
-                        PrintUserPlayCardDeck();
+                        PrintAllCardDeck(UserPlayCardStack);
                         Console.ReadLine();
                     }
                     else
                     {
-                        Console.WriteLine($"You have no Deck\nPlease choose a Deck with the 'Change' Command\n");
+                        Console.WriteLine($"You have no valid Deck\nPlease choose a Deck with the 'Change' Command\n");
                         Console.ReadLine();
                     }
                 }
                 else if (userInput.Equals("Change"))
                 {
+                    Console.Clear();
                     if (UserAllCardStack != null)
                     {
                         ChangeUserPlayCardStack();
@@ -186,9 +192,10 @@ namespace MonsterTradingCardGame.Classes
                 }
                 else if (userInput.Equals("All"))
                 {
+                    Console.Clear();
                     if (UserAllCardStack != null)
                     {
-                        PrintUserAllCardDeck();
+                        PrintAllCardDeck(UserAllCardStack);
                         Console.ReadLine();
                     }
                     else
@@ -199,6 +206,7 @@ namespace MonsterTradingCardGame.Classes
                 }
                 else if (userInput.Equals("Quit"))
                 {
+                    Console.Clear();
                     Console.WriteLine($"{UniqueUsername} quit Deck-Manager.");
                     quitManager = true;
                     return;

@@ -38,7 +38,7 @@ namespace MonsterTradingCardGame.Classes
                 }
                 else if (_userInput.Equals("Battle"))
                 {
-                    UserBattle(user);
+                    user = UserBattle(user);
                     Console.ReadLine();
 
                 }
@@ -129,15 +129,28 @@ namespace MonsterTradingCardGame.Classes
             Console.ReadLine();
         }
 
-        public void UserBattle(User user)
+        public User UserBattle(User user)
         {
             if (user != null)
             {
-                User aiUser = new User(/*"AI"*/);
-                Battles battles = new Battles();
                 if (user.UserPlayCardStack is {Count: 4})
                 {
-                    battles.Battle(user, aiUser);
+                    User enemyUser = db.GetBattleEnemy(user);
+                    Battles battles = new Battles();
+                    if (enemyUser != null && enemyUser.UserPlayCardStack.Count == 4 && user.UserID != enemyUser.UserID)
+                    {
+                        battles.Battle(user, enemyUser);
+                        user = db.UpdatedUser(user);
+
+                        if (user == null)
+                        {
+                            Console.WriteLine($"An Error occurred, please contact the Support or try to Login again!");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"No viable Enemy to Battle was found, try again another time...");
+                    }
                 }
                 else
                 {
@@ -148,6 +161,8 @@ namespace MonsterTradingCardGame.Classes
             {
                 NoUser();
             }
+
+            return user;
         }
 
         public void UserProfile(User user)

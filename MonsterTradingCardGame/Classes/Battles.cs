@@ -7,11 +7,13 @@ using MonsterTradingCardGame.Interfaces;
 using MonsterTradingCardGame.Classes;
 using MonsterTradingCardGame.Dictionary;
 using MonsterTradingCardGame.Enum;
+using MonsterTradingCardGame.PostgreDB;
 
 namespace MonsterTradingCardGame.Classes
 {
     class Battles : IBattles
     {
+        private DBConn db = new DBConn();
         public void Battle(User user1, User user2)
         {
             Console.Clear();
@@ -22,8 +24,8 @@ namespace MonsterTradingCardGame.Classes
             User gameUser1 = user1.DeepCopy();
             User gameUser2 = user2.DeepCopy();
 
-            Cards playCard1 = new Cards();
-            Cards playCard2 = new Cards();
+            Cards playCard1;
+            Cards playCard2;
 
             int gameCardInt1;
             double gameCard1Dmg;
@@ -76,14 +78,28 @@ namespace MonsterTradingCardGame.Classes
                 if (gameUser1.UserPlayCardStack.Count > 0 && gameUser2.UserPlayCardStack.Count > 0) continue;
                 Console.WriteLine($"Play Card Deck is empty\n{gameUser1.UniqueUsername} has {gameUser1.UserPlayCardStack.Count} left\n{gameUser2.UniqueUsername} has {gameUser2.UserPlayCardStack.Count} left\n");
 
-                Console.Write(gameUser1.UserPlayCardStack.Count > 0 ? $"{gameUser1.UniqueUsername}" : $"{gameUser2.UniqueUsername}");
-                Console.WriteLine($" has won the Battle in {rounds} rounds!");
+                if (gameUser1.UserPlayCardStack.Count > 0)
+                {
+                    BattleWinning(gameUser1, gameUser2, rounds);
+                }
+                else if (gameUser2.UserPlayCardStack.Count > 0)
+                {
+                    BattleWinning(gameUser2, gameUser1, rounds);
+                }
+                else
+                {
+                    Console.WriteLine($"An Error occurred in the Battle between {gameUser1.UniqueUsername} and {gameUser2.UniqueUsername} in round {rounds}.\nNO Elo is gained nor lost in this round!");
+                }
                 endOfBattle = true;
                 return;
             }
-            
+        }
 
-
+        private void BattleWinning(User winner, User loser, int rounds)
+        {
+            Console.WriteLine($"{winner.UniqueUsername} has won the Battle in {rounds} rounds vs {loser.UniqueUsername}!\n{winner.UniqueUsername} gained +3 Elo, while {loser.UniqueUsername} lost -5 Elo.");
+            db.UpdateWin(winner);
+            db.UpdateLos(loser);
         }
 
         private double CheckDmgMulti(Cards card1, Cards card2)
