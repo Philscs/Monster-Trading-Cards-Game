@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
-    <PackageReference Include="Npgsql" Version="6.0.2" />
+    <Folder Include="ToTestFunctions\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ToTestFunctions\" />
+    <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
+    <PackageReference Include="Npgsql" Version="6.0.2" />
   </ItemGroup>
 
 </Project>

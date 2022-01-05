@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using MonsterTradingCardGame.Classes;
 using MonsterTradingCardGame.Enum;
 using Npgsql;
@@ -79,10 +80,7 @@ namespace MonsterTradingCardGame.PostgreDB
 
                 if (userID != 0)
                 {
-                    //Console.WriteLine($"DB register; good");
                     User registerUser = new User(userID, user.UniqueUsername, user.Coins, user.UserElo, user.password, user.Wins, user.Loses);
-                    //Console.WriteLine($"user id: {registerUser.UserID}");
-                    //Console.ReadLine();
                     return registerUser;
                 }
 
@@ -281,14 +279,14 @@ namespace MonsterTradingCardGame.PostgreDB
                     userCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, user.UserID);
                     userCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, id);
                     userCmd.ExecuteNonQuery();
-                    transaction.Commit();
                 }
-
+                transaction.Commit();
                 return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
                 return false;
             }
         }
@@ -410,26 +408,34 @@ namespace MonsterTradingCardGame.PostgreDB
                 }
                 dr.Close();
 
-                foreach (var id in users)
+                while (users.Count > 0)
                 {
-                    using var idCmd = new NpgsqlCommand(
-                        "select sum(\"isInDeck\"::int) from \"userPlayCards\" where \"gameUserID\" = @p1; ; ",
-                        conn);
+                    Random rand = new Random();
+                    int randInt = rand.Next(0, users.Count);
+                    int id = users.ElementAt(randInt);
+                    users.RemoveAt(randInt);
 
-                    idCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, id);
-
-                    dr = idCmd.ExecuteReader();
-                    while (dr.Read())
+                    if (id > 0)
                     {
-                        //Console.WriteLine($"{dr.GetInt32(0)} is sum of {}");
-                        if (dr.GetInt32(0) != 4) continue;
-                        enemyID = id;
-                        break;
-                    }
-                    dr.Close();
+                        using var idCmd = new NpgsqlCommand(
+                            "select sum(\"isInDeck\"::int) from \"userPlayCards\" where \"gameUserID\" = @p1;",
+                            conn);
 
-                    if (enemyID > -1)
-                        break;
+                        idCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, id);
+
+                        dr = idCmd.ExecuteReader();
+
+                        while (dr.Read())
+                        {
+                            if (dr.GetInt32(0) != 4) continue;
+                            enemyID = id;
+                            break;
+                        }
+                        dr.Close();
+
+                        if (enemyID > 0)
+                            break;
+                    }
                 }
 
                 User enemyUser = GetUserByID(enemyID);
@@ -480,6 +486,271 @@ namespace MonsterTradingCardGame.PostgreDB
                 dr?.Close();
                 Console.WriteLine($"catch Exception: {ex}");
                 return null;
+            }
+        }
+
+        public List<(string, int)> GetScoreByElo()
+        {
+            var tuplelist = new List<(string, int)>();
+            using var conn = Connection(_connString);
+            //var transaction = conn.BeginTransaction();
+            NpgsqlDataReader dr = null;
+            try
+            {
+                using var eloCmd = new NpgsqlCommand(
+                    "select \"userName\", \"userElo\" from \"gameUser\" order by\"userElo\" desc;",
+                    conn);
+
+                dr = eloCmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    tuplelist.Add((dr.GetString(0), dr.GetInt32(1)));
+                }
+
+                dr.Close();
+
+                return tuplelist.Count > 0 ? tuplelist : null;
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                return null;
+            }
+        }
+        public List<(string, int)> GetScoreByGames()
+        {
+            var tuplelist = new List<(string, int)>();
+            using var conn = Connection(_connString);
+            //var transaction = conn.BeginTransaction();
+            NpgsqlDataReader dr = null;
+            try
+            {
+                using var eloCmd = new NpgsqlCommand("select \"userName\", case when \"userLoses\" = 0 and \"userWins\" = 0 then 0 when \"userLoses\" = 0 and \"userWins\" > 0 then 100 when \"userLoses\" > 0 and \"userWins\" > 0 or \"userWins\" = 0 then \"userWins\" / (\"userWins\" + \"userLoses\") * 100 end from \"gameUser\" order by \"userWins\" desc; ", conn);
+
+                dr = eloCmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    tuplelist.Add((dr.GetString(0), dr.GetInt32(1)));
+                }
+
+                dr.Close();
+
+                return tuplelist.Count > 0 ? tuplelist : null;
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                return null;
+            }
+        }
+
+        public bool GetMonsterTypePackages(User user, int type)
+        {
+            int monsterType = 0;
+            using var conn = Connection(_connString);
+            NpgsqlDataReader dr = null;
+            try
+            {
+                List<int> cardIDs = new List<int>();
+                using var cardCmd = new NpgsqlCommand("select \"cardID\" from \"allCards\" where \"cardElement\" = @p1 and \"cardType\" = @p2 ;", conn);
+
+                cardCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, type);
+                cardCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, monsterType);
+
+                dr = cardCmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    cardIDs.Add(dr.GetInt32(0));
+                }
+
+                dr.Close();
+                List<int> randIDs = new List<int>();
+                Random rand = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    int randInt = rand.Next(0, cardIDs.Count);
+                    int id = cardIDs.ElementAt(randInt);
+                    cardIDs.RemoveAt(randInt);
+                    
+                    randIDs.Add(id);
+                }
+
+                if (AddUserPlayCards(user, randIDs))
+                {
+                    return true;
+                }
+                return false;
+
+
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return false;
+            }
+        }
+
+        public bool GetRandPackages(User user)
+        {
+            int monsterType = 0;
+            using var conn = Connection(_connString);
+            NpgsqlDataReader dr = null;
+            try
+            {
+                List<int> cardIDs = new List<int>();
+                using var cardCmd = new NpgsqlCommand("select \"cardID\" from \"allCards\" where \"cardType\" = @p1 ;", conn);
+
+                cardCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, monsterType);
+
+                dr = cardCmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    cardIDs.Add(dr.GetInt32(0));
+                }
+
+                dr.Close();
+                List<int> randIDs = new List<int>();
+                Random rand = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    int randInt = rand.Next(0, cardIDs.Count);
+                    int id = cardIDs.ElementAt(randInt);
+                    cardIDs.RemoveAt(randInt);
+
+                    randIDs.Add(id);
+                }
+
+                if (AddUserPlayCards(user, randIDs))
+                {
+                    return true;
+                }
+                return false;
+
+
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return false;
+            }
+        }
+
+        public bool GetMixedPackages(User user)
+        {
+            using var conn = Connection(_connString);
+            NpgsqlDataReader dr = null;
+            try
+            {
+                List<int> cardIDs = new List<int>();
+                using var cardCmd = new NpgsqlCommand("select \"cardID\" from \"allCards\" ;", conn);
+
+                dr = cardCmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    cardIDs.Add(dr.GetInt32(0));
+                }
+
+                dr.Close();
+                List<int> randIDs = new List<int>();
+                Random rand = new Random();
+                for (int i = 0; i < 5; i++)
+                {
+                    int randInt = rand.Next(0, cardIDs.Count);
+                    int id = cardIDs.ElementAt(randInt);
+                    cardIDs.RemoveAt(randInt);
+
+                    randIDs.Add(id);
+                }
+
+                if (AddUserPlayCards(user, randIDs))
+                {
+                    return true;
+                }
+                return false;
+
+
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return false;
+            }
+        }
+
+        public int CheckCoins(User user)
+        {
+            int coins = 0;
+            
+            using var conn = Connection(_connString);
+            //var transaction = conn.BeginTransaction();
+            NpgsqlDataReader dr = null;
+            try
+            {
+                using var coinCmd = new NpgsqlCommand(
+                    "select \"userCoins\" from \"gameUser\" where \"userID\" = @p1;",
+                    conn);
+                coinCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, user.UserID);
+
+                dr = coinCmd.ExecuteReader();
+
+                while (dr.Read())
+                {
+                    coins = dr.GetInt32(0);
+                }
+
+                dr.Close();
+
+                return coins;
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                coins = 0;
+                return coins;
+            }
+        }
+        public bool ReduceUserCoins(User user)
+        {
+            int cost = 5;
+            using var conn = Connection(_connString);
+            var transaction = conn.BeginTransaction();
+            try
+            {
+                if (CheckCoins(user) < 5)
+                {
+                    return false;
+                }
+                using var downCmd = new NpgsqlCommand(
+                    "update \"gameUser\" set \"userCoins\" = @p1 where \"userID\" = @p2;",
+                    conn);
+
+                downCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, CheckCoins(user) - cost);
+                downCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, user.UserID); 
+                
+                downCmd.ExecuteNonQuery();
+                transaction.Commit();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return false;
             }
         }
     }

@@ -48,12 +48,11 @@ namespace MonsterTradingCardGame.Classes
                 }
                 else if (_userInput.Equals("Shop"))
                 {
-                    UserShop();
+                    user = UserShop(user);
                 }
                 else if (_userInput.Equals("Register"))
                 {
                     user = UserRegister();
-
                 }
                 else if (_userInput.Equals("Quit"))
                 {
@@ -169,7 +168,46 @@ namespace MonsterTradingCardGame.Classes
         {
             if (user != null)
             {
-                user.PrintUserInformation();
+                bool exit = true;
+                do
+                {
+                    _userInput = null;
+                    Console.Clear();
+                    Console.WriteLine($"Profile-Manager\n Show   -> shows User Profile\n Change -> change Profile Data \n Score  -> shows global Scoreboard\n Quit   -> quit Profile-Manager & go back to the Main-Menu\n");
+                    Console.Write("Input: ");
+
+                    while (_userInput == null)
+                    {
+                        _userInput = Console.ReadLine();
+                    }
+
+                    if (_userInput.Equals("Show"))
+                    {
+                        user.PrintUserInformation();
+                        Console.ReadLine();
+                    }
+                    else if (_userInput.Equals("Change"))
+                    {
+                        user.ChangeUserProfile(user);
+                    } 
+                    else if (_userInput.Equals("Score"))
+                    {
+                        user.PrintScoreboard();
+                    }
+                    else if (_userInput.Equals("Quit"))
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"{user.UniqueUsername} quit Profile-Manager");
+                        Console.ReadLine();
+                        exit = false;
+                        return;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                        Console.ReadLine();
+                    }
+                } while (exit);
             }
             else
             {
@@ -178,10 +216,52 @@ namespace MonsterTradingCardGame.Classes
             Console.ReadLine();
         }
 
-        public void UserShop()
+        public User UserShop(User user)
         {
-            Console.WriteLine($"Stay tuned, our Shop will come soon...");
+            if (user != null)
+            {
+                bool exit = true;
+                do
+                {
+                    _userInput = null;
+                    Console.Clear();
+                    Console.WriteLine($"Welcome to our Shop\n Buy    -> Buy Card-packages\n Trade  -> create new Trades & trade with others\n Quit   -> quit the Shop & go back to the Main-Menu\n");
+                    Console.Write("Input: ");
+
+                    while (_userInput == null)
+                    {
+                        _userInput = Console.ReadLine();
+                    }
+
+                    if (_userInput.Equals("Buy"))
+                    {
+                        user = user.Shop(user);
+                    }
+                    else if (_userInput.Equals("Trade"))
+                    {
+                        user = user.Trade(user);
+                    }
+                    else if (_userInput.Equals("Quit"))
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"{user.UniqueUsername} left the Shop");
+                        Console.ReadLine();
+                        exit = false;
+                        return user;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                        Console.ReadLine();
+                    }
+                } while (exit);
+            }
+            else
+            {
+                NoUser();
+            }
             Console.ReadLine();
+            return null;
         }
 
         public User UserRegister()

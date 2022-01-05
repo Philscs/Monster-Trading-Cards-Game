@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonsterTradingCardGame.Enum;
 using MonsterTradingCardGame.Interfaces;
 using MonsterTradingCardGame.PostgreDB;
 
@@ -70,42 +71,57 @@ namespace MonsterTradingCardGame.Classes
         
         public void ChangeUserPlayCardStack()
         {
-            List<Cards> tmpCardsList = db.GetUserAllCardStack(this);
-            UserPlayCardStack.Clear();
-            int chosenCard;
-            int cardCount = 0;
-            //get Cards from DB not from TestCards
-            while (cardCount < IndexSize)
+            if (UserAllCardStack.Count > 0)
             {
-                Console.Clear();
-                PrintAllCardDeck(tmpCardsList);
-                Console.Write("Choose Cards by there Index:");
-                chosenCard = -1;
-                while (chosenCard < 0)
+                if (UserPlayCardStack != null)
                 {
-                    string input = Console.ReadLine();
-                    Int32.TryParse(input, out chosenCard);
-                    if (chosenCard < 0 || chosenCard > tmpCardsList.Count)
-                    {
-                        Console.WriteLine("Wrong Index!\nTry again...");
-                        chosenCard = 0;
-                    }
+                    UserPlayCardStack.Clear();
                 }
-                cardCount++;
+                else
+                {
+                    UserPlayCardStack = new List<Cards>();
+                }
 
-                UserPlayCardStack.Add(tmpCardsList.ElementAt(chosenCard));
-                tmpCardsList.RemoveAt(chosenCard);
-                Console.Clear();
-                Console.WriteLine(cardCount < IndexSize ? "Your Deck at the Moment:" : "Your chosen Deck is:");
-                PrintAllCardDeck(UserPlayCardStack);
-                Console.WriteLine("Press any key to continue");
-                Console.ReadLine();
+                List<Cards> tmpCardsList = db.GetUserAllCardStack(this);
+                int chosenCard;
+                int cardCount = 0;
+                //get Cards from DB not from TestCards
+                while (cardCount < IndexSize)
+                {
+                    Console.Clear();
+                    PrintAllCardDeck(tmpCardsList);
+                    Console.Write("Choose Cards by there Index:");
+                    chosenCard = -1;
+                    while (chosenCard < 0)
+                    {
+                        string input = Console.ReadLine();
+                        Int32.TryParse(input, out chosenCard);
+                        if (chosenCard < 0 || chosenCard > tmpCardsList.Count)
+                        {
+                            Console.WriteLine("Wrong Index!\nTry again...");
+                            chosenCard = 0;
+                        }
+                    }
+                    cardCount++;
+
+                    UserPlayCardStack.Add(tmpCardsList.ElementAt(chosenCard));
+                    tmpCardsList.RemoveAt(chosenCard);
+                    Console.Clear();
+                    Console.WriteLine(cardCount < IndexSize ? "Your Deck at the Moment:" : "Your chosen Deck is:");
+                    PrintAllCardDeck(UserPlayCardStack);
+                    Console.WriteLine("Press any key to continue");
+                    Console.ReadLine();
+                }
+
+                if (!db.ChangePlayDeck(this))
+                {
+                    Console.WriteLine("An Error occurred!\nPlease build a new Deck!");
+                    UserPlayCardStack.Clear();
+                }
             }
-
-            if (!db.ChangePlayDeck(this))
+            else
             {
-                Console.WriteLine("An Error occurred!\nPlease build a new Deck!");
-                UserPlayCardStack.Clear();
+                Console.WriteLine($"You have no Cards!\nBuy some in the Shop");
             }
         }
         public List<Cards> GetUserPlayCardStack()
@@ -219,6 +235,203 @@ namespace MonsterTradingCardGame.Classes
                 Console.Clear();
                 Console.WriteLine("Deck-Manger");
             }
+        }
+
+        public User ChangeUserProfile(User user)
+        {
+            Console.WriteLine($"Change Data here");
+            Console.ReadLine();
+            return user;
+        }
+
+        public void PrintScoreboard()
+        {
+            Console.Clear();
+            string userInput = null;
+            List<(string, int)> score = null;
+            Console.WriteLine($"Choose how the Scoreboard should be displayed.");
+            Console.WriteLine($" Elo   -> Highest Elo descending\n Games -> Highest Win-% descending");
+            do
+            {
+                Console.WriteLine("Input: ");
+                while (userInput == null)
+                {
+                    userInput = Console.ReadLine();
+                }
+                if (userInput.Equals("Elo"))
+                {
+                    score = db.GetScoreByElo();
+                    if (score != null)
+                    {
+                        int i = 1;
+                        Console.Clear();
+                        Console.WriteLine($"Scoreboard sorted by Elo");
+                        foreach (var tuple in score)
+                        {
+                            Console.WriteLine($" {i}. [User - {tuple.Item1} / Elo - {tuple.Item2}]");
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(NoSearch());
+                    }
+                }
+                else if (userInput.Equals("Games"))
+                {
+                    score = db.GetScoreByGames();
+                    if (score != null)
+                    {
+                        int i = 1;
+                        Console.Clear();
+                        Console.WriteLine($"Scoreboard sorted by Win-%");
+                        foreach (var tuple in score)
+                        {
+                            Console.WriteLine($" {i}. [User - {tuple.Item1} / Win-% - {tuple.Item2}]");
+                            i++;
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine(NoSearch());
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                }
+                Console.ReadLine();
+            } while (userInput == null);
+        }
+
+        public string NoSearch()
+        {
+            string noSearch = "Your Search was invalid, nothing found!";
+            return noSearch;
+        }
+
+        public User Shop(User user)
+        {
+            string checkInput = null;
+            string userInput = null;
+            bool exit = true;
+            do
+            {
+                userInput = null;
+                checkInput = null;
+                Console.Clear();
+                Console.WriteLine($"Package-Manager\nAll Packages cost 5 Gold and include 5 Cards!\nYou may get Cards you already have...\nChoose a Package:");
+                Console.WriteLine($" Water  -> get Monsters of Type Water\n Fire   -> get Monsters of Type Fire\n Normal -> get Monsters of Type Normal\n Rand   -> get Monster of a random Type\n Mixed  -> get a Mix of Monsters and Spells\n Quit   -> quit Package Manager & return to the Shop\nInput:");
+                while (userInput == null)
+                {
+                    userInput = Console.ReadLine();
+                }
+
+                if (userInput.Equals("Quit"))
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{UniqueUsername} quit Package-Manager.");
+                    Console.ReadLine();
+                    exit = true;
+                    return user;
+                }
+
+                Console.WriteLine($"You chose the {userInput} Package.\nChose [Y|n] to confirm or decline your choice...\nInput:");
+                
+                while (checkInput == null)
+                {
+                    checkInput = Console.ReadLine();
+                }
+
+                if (!checkInput.Equals("Y") && !checkInput.Equals("y"))
+                {
+                    Console.WriteLine($"You dismissed the Package!\nPress any Key to try again.");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                if (db.CheckCoins(this) < 5)
+                {
+                    Console.WriteLine($"Your funds are invalid you have not enough Coins to buy a Package!\nEither Sell Cards or Win Games to get more Coins...");
+                    return db.UpdatedUser(this);
+                }
+
+
+                if (userInput.Equals("Water"))
+                {
+                    if (!db.GetMonsterTypePackages(this, (int) CardTypesEnum.CardElementEnum.Water))
+                    {
+                        Console.WriteLine($"Something went wrong, try again later!");
+                    }
+                    else
+                    {
+                        db.ReduceUserCoins(this);
+                        return db.UpdatedUser(this);
+                    }
+                }
+                else if (userInput.Equals("Fire"))
+                {
+                    if (!db.GetMonsterTypePackages(this, (int)CardTypesEnum.CardElementEnum.Fire))
+                    {
+                        Console.WriteLine($"Something went wrong, try again later!");
+                    }
+                    else
+                    {
+                        db.ReduceUserCoins(this);
+                        return db.UpdatedUser(this);
+                    }
+                }
+                else if (userInput.Equals("Normal"))
+                {
+                    if (!db.GetMonsterTypePackages(this, (int)CardTypesEnum.CardElementEnum.Normal))
+                    {
+                        Console.WriteLine($"Something went wrong, try again later!");
+                    }
+                    else
+                    {
+                        db.ReduceUserCoins(this);
+                        return db.UpdatedUser(this);
+                    }
+                }
+                else if (userInput.Equals("Rand"))
+                {
+                    if (!db.GetRandPackages(this))
+                    {
+                        Console.WriteLine($"Something went wrong, try again later!");
+                    }
+                    else
+                    {
+                        db.ReduceUserCoins(this);
+                        return db.UpdatedUser(this);
+                    }
+                }
+                else if (userInput.Equals("Mixed"))
+                {
+                    if (!db.GetMixedPackages(this))
+                    {
+                        Console.WriteLine($"Something went wrong, try again later!");
+                    }
+                    else
+                    {
+                        db.ReduceUserCoins(this);
+                        return db.UpdatedUser(this);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                    Console.ReadLine();
+                }
+                
+
+            } while (exit);
+
+            return user;
+        }
+        public User Trade(User user)
+        {
+            Console.WriteLine($"Trade shit here");
+            return user;
         }
     }
 }
