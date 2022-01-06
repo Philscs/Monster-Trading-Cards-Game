@@ -250,7 +250,7 @@ namespace MonsterTradingCardGame.PostgreDB
                 foreach (var i in user.UserPlayCardStack)
                 {
                     using var updateCmd = new NpgsqlCommand(
-                        "update \"userPlayCards\" set \"isInDeck\" = true where \"gameUserID\" = 36 and \"playCardsID\" = (select \"playCardsID\" from \"userPlayCards\" where \"gameUserID\" = @p1 and \"cardID\" = @p2 limit 1);",
+                        "update \"userPlayCards\" set \"isInDeck\" = true where \"gameUserID\" = @p1 and \"playCardsID\" = (select \"playCardsID\" from \"userPlayCards\" where \"gameUserID\" = @p1 and \"cardID\" = @p2 limit 1);",
                         conn);
 
                     updateCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, user.UserID);
@@ -986,9 +986,9 @@ namespace MonsterTradingCardGame.PostgreDB
             }
         }
 
-        public bool ConfirmedTrade(User user, int oldUser, int cardID)
+        public bool ConfirmedCoinTrade(User user, int oldUser, int cardID)
         {
-            const bool inTrade = false;
+            const bool notInTrade = false;
             using var conn = Connection(_connString);
             var transaction = conn.BeginTransaction();
             try
@@ -997,12 +997,63 @@ namespace MonsterTradingCardGame.PostgreDB
                     "update \"userPlayCards\" set \"isInTrade\" = @p1, \"gameUserID\" = @p2 where \"playCardsID\" = (select \"playCardsID\" from \"userPlayCards\" where \"gameUserID\" = @p3 and \"cardID\" = @p4 and \"isInDeck\" = false and \"isInTrade\" = true limit 1);",
                     conn);
 
-                downCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Boolean, inTrade);
+                downCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Boolean, notInTrade);
                 downCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, user.UserID);
                 downCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Bigint, oldUser);
                 downCmd.Parameters.AddWithValue("p4", NpgsqlDbType.Bigint, cardID);
 
                 downCmd.ExecuteNonQuery();
+                transaction.Commit();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return false;
+            }
+        }
+
+        public bool ConfirmedCardTrade(User accUser, User tradeUser, int accCardID, int tradeCardID)
+        {
+            const bool notInTrade = false;
+            using var conn = Connection(_connString);
+            var transaction = conn.BeginTransaction();
+            try
+            {
+                using var firstTradeCmd = new NpgsqlCommand(
+                    "update \"userPlayCards\" set \"isInTrade\" = @p1, \"gameUserID\" = @p2 where \"playCardsID\" = (select \"playCardsID\" from \"userPlayCards\" where \"gameUserID\" = @p3 and \"cardID\" = @p4 and \"isInDeck\" = false and \"isInTrade\" = true limit 1);",
+                    conn);
+
+                firstTradeCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Boolean, notInTrade);
+                firstTradeCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, accUser.UserID);
+                firstTradeCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Bigint, tradeUser.UserID);
+                firstTradeCmd.Parameters.AddWithValue("p4", NpgsqlDbType.Bigint, tradeCardID);
+
+                firstTradeCmd.ExecuteNonQuery();
+                transaction.Commit();
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return false;
+            }
+            
+            transaction = conn.BeginTransaction();
+            try
+            {
+                using var secondTradeCmd = new NpgsqlCommand(
+                    "update \"userPlayCards\" set \"gameUserID\" = @p1 where \"playCardsID\" = (select \"playCardsID\" from \"userPlayCards\" where \"gameUserID\" = @p2 and \"cardID\" = @p3 and \"isInDeck\" = false and \"isInTrade\" = false limit 1);",
+                    conn);
+
+                secondTradeCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, tradeUser.UserID);
+                secondTradeCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, accUser.UserID);
+                secondTradeCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Bigint, accCardID);
+
+                secondTradeCmd.ExecuteNonQuery();
                 transaction.Commit();
 
                 return true;
@@ -1040,6 +1091,60 @@ namespace MonsterTradingCardGame.PostgreDB
                 Console.WriteLine($"catch Exception: {ex}");
                 Console.ReadLine();
                 return false;
+            }
+        }
+        
+        public List<Cards> GetToTradeCards(TradeHelper tradeHelper, User user)
+        {
+            List<int> cardIDs = new List<int>();
+            List<Cards> cards = new List<Cards>();
+
+            using var conn = Connection(_connString);
+            //var transaction = conn.BeginTransaction();
+            NpgsqlDataReader dr = null;
+            try
+            {
+                using var cardIDCmd = new NpgsqlCommand(
+                    "select \"cardID\" from \"userPlayCards\" where \"isInDeck\" = false and \"isInTrade\" = false and \"gameUserID\" = @p1;",
+                    conn);
+
+                cardIDCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, user.UserID);
+
+                dr = cardIDCmd.ExecuteReader();
+                while (dr.Read())
+                {
+                    cardIDs.Add(dr.GetInt32(0));
+                }
+
+                dr.Close();
+
+                foreach (var i in cardIDs)
+                {
+                    using var cardCmd = new NpgsqlCommand(
+                        "select * from \"allCards\" where \"cardID\" = @p1 and \"cardType\" = @p2 and \"cardDmg\" > @p3;",
+                        conn);
+
+                    cardCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, i);
+                    cardCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, (int)tradeHelper.TradeType);
+                    cardCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Bigint, i);
+
+                    dr = cardCmd.ExecuteReader();
+                    while (dr.Read())
+                    {
+                        Cards card = new Cards(dr.GetInt32(0), dr.GetString(1), dr.GetInt32(2), (CardTypesEnum.CardElementEnum)dr.GetInt32(3), (CardTypesEnum.CardTypeEnum)dr.GetInt32(4));
+                        cards.Add(card);
+                    }
+                    dr.Close();
+                }
+
+                return cards;
+            }
+            catch (Exception ex)
+            {
+                dr?.Close();
+                Console.WriteLine($"catch Exception: {ex}");
+                Console.ReadLine();
+                return null;
             }
         }
     }

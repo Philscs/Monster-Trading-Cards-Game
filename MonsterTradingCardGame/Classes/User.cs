@@ -491,6 +491,7 @@ namespace MonsterTradingCardGame.Classes
                 if (db.CheckCoins(this) < 5)
                 {
                     Console.WriteLine($"Your funds are invalid you have not enough Coins to buy a Package!\nEither Sell Cards or Win Games to get more Coins...");
+                    Console.ReadLine();
                     return db.UpdatedUser(this);
                 }
 
@@ -744,7 +745,7 @@ namespace MonsterTradingCardGame.Classes
                 userInput = null;
                 chosenIndex = null;
                 Console.Clear();
-                Console.WriteLine($"Trade-Manager\nYou can offer a Trade for a Card which is not in your Deck or check out the Trades of other User");
+                Console.WriteLine($"All-Trades\nCheck out the Trades of other User");
 
                 Console.WriteLine($"Choose a Card to trade by its Index!");
                 int index = 0;
@@ -787,7 +788,7 @@ namespace MonsterTradingCardGame.Classes
                     return user;
                 }
 
-                if ((int) tradeableCardsList[chosenCard].TradeType >= 2)
+                if ((int) tradeableCardsList[chosenCard].TradeType == 2)
                 {
                     if (db.CheckCoins(this) > tradeableCardsList[chosenCard].TradeAmnt)
                     {
@@ -806,13 +807,74 @@ namespace MonsterTradingCardGame.Classes
                             return user;
                         }
                        
-                        db.ConfirmedTrade(this, tradeableCardsList[chosenCard].TradeUser.UserID, tradeableCardsList[chosenCard].TradeCard.CardID);
+                        db.ConfirmedCoinTrade(this, tradeableCardsList[chosenCard].TradeUser.UserID, tradeableCardsList[chosenCard].TradeCard.CardID);
                         db.ReduceUserCoins(this, tradeableCardsList[chosenCard].TradeAmnt);
                         db.IncreaseUserCoins(tradeableCardsList[chosenCard].TradeUser, tradeableCardsList[chosenCard].TradeAmnt);
                         db.DeleteTradeOffer(tradeableCardsList[chosenCard]);
                         user = db.UpdatedUser(this);
                         return user;
                     }
+                    else
+                    {
+                        Console.WriteLine($"You do not have enough Coins ​​for that offer!");
+                        Console.ReadLine();
+                        return user;
+                    }
+                }
+
+
+                if((int)tradeableCardsList[chosenCard].TradeType == 0 || (int)tradeableCardsList[chosenCard].TradeType == 1)
+                {
+                    List<Cards> toTradeCards = db.GetToTradeCards(tradeableCardsList[chosenCard], this);
+                    if (toTradeCards.Count <= 0)
+                    {
+                        Console.WriteLine($"You do not have a card with the appropriate values ​​for the offer!");
+                        Console.ReadLine();
+                        return user;
+                    }
+
+                    PrintAllCardDeck(toTradeCards);
+
+                    int chosenTradeCard = -1;
+                    while (chosenTradeCard == -1)
+                    {
+                        Console.Write("Index:");
+                        string choseTradeCardInput = Console.ReadLine();
+                        if (Int32.TryParse(choseTradeCardInput, out chosenTradeCard))
+                        {
+                            if (chosenCard < 0 || chosenCard > tradeableCardsList.Count)
+                            {
+                                Console.WriteLine("Wrong Index!\nTry again...");
+                                Console.ReadLine();
+                                chosenCard = -1;
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Only Numeric Inputs in the Range of the indices");
+                            Console.ReadLine();
+                        }
+                    }
+
+                    Console.WriteLine($"You have chosen a {toTradeCards[chosenTradeCard].CardElement.ToString()} {toTradeCards[chosenTradeCard].CardName} with {toTradeCards[chosenTradeCard].CardDamage} Damage, for a Trade where {tradeableCardsList[chosenCard].TradeAmnt} was the required Damage.\nChose [Y|n] to confirm or decline your choice...\nInput:");
+                    string confirm = null;
+                    while (confirm == null)
+                    {
+                        confirm = Console.ReadLine();
+                    }
+
+                    if (!confirm.Equals("Y") && !confirm.Equals("y"))
+                    {
+                        Console.WriteLine($"You dismissed the Trade!");
+                        Console.ReadLine();
+                        exit = true;
+                        return user;
+                    }
+
+                    db.ConfirmedCardTrade(this, tradeableCardsList[chosenCard].TradeUser, toTradeCards[chosenTradeCard].CardID, tradeableCardsList[chosenCard].TradeCard.CardID);
+                    db.DeleteTradeOffer(tradeableCardsList[chosenCard]);
+                    user = db.UpdatedUser(this);
+                    return user;
                 }
 
                 user = db.UpdatedUser(this);
