@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using MonsterTradingCardGame.Enum;
 using MonsterTradingCardGame.Interfaces;
 using MonsterTradingCardGame.PostgreDB;
+using BCryptNet = BCrypt.Net.BCrypt;
+
 
 namespace MonsterTradingCardGame.Classes
 {
@@ -239,9 +241,144 @@ namespace MonsterTradingCardGame.Classes
 
         public User ChangeUserProfile(User user)
         {
-            Console.WriteLine($"Change Data here");
-            Console.ReadLine();
-            return user;
+            bool exit = true;
+            bool checkChange = false;
+            string userInput = null;
+            string changeInput = null;
+            string check = null;
+            do
+            {
+                userInput = null;
+                changeInput = null;
+                check = null;
+                Console.Clear();
+                Console.WriteLine($"Profile-Manager\nYou can change here your User-Data.\nWhat do you wanna change:\n Name\n Password\nQuit\nInput:");
+                while (userInput == null)
+                {
+                    userInput = Console.ReadLine();
+                }
+
+                if (userInput.Equals("Name"))
+                {
+                    while (!checkChange)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"Change the Name\nInput:");
+                        while (changeInput == null)
+                        {
+                            changeInput = Console.ReadLine();
+                        }
+
+                        Console.WriteLine($"You chose '{changeInput}' as your new Name.\nChose [Y|n] to confirm or decline your choice...\nInput:");
+                        while (check == null)
+                        {
+                            check = Console.ReadLine();
+                        }
+
+                        if (check.Equals("Y") || check.Equals("y"))
+                        {
+                            checkChange = true;
+                            user.UniqueUsername = changeInput;
+                            if (db.UpdateUserData(user))
+                            {
+                                Console.WriteLine($"You changed your Name to -> {user.UniqueUsername}");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Something went wrong!");
+                            }
+                            user = db.UpdatedUser(user);
+                        }
+                    }
+                }
+                else if (userInput.Equals("Password"))
+                {
+                    while (!checkChange)
+                    {
+                        Console.Clear();
+                        Console.WriteLine($"Password-Manager\nChange the Password\nInput OLD Password:");
+                        var oldPass = string.Empty;
+                        ConsoleKey key;
+                        do
+                        {
+                            var keyInfo = Console.ReadKey(intercept: true);
+                            key = keyInfo.Key;
+
+                            if (key == ConsoleKey.Backspace && oldPass.Length > 0)
+                            {
+                                Console.Write("\b \b");
+                                oldPass = oldPass[0..^1];
+                            }
+                            else if (!char.IsControl(keyInfo.KeyChar))
+                            {
+                                Console.Write("*");
+                                oldPass += keyInfo.KeyChar;
+                            }
+                        } while (key != ConsoleKey.Enter);
+
+                        if (!BCryptNet.Verify(oldPass, user.password))
+                        {
+                            Console.WriteLine($"\nOld Password was wrong!\nTry again!");
+                            Console.ReadLine();
+                            continue;
+                        }
+
+                        Console.WriteLine($"\nEnter your NEW Password:");
+                        var firstPass = string.Empty;
+                        do
+                        {
+                            var keyInfo = Console.ReadKey(intercept: true);
+                            key = keyInfo.Key;
+
+                            if (key == ConsoleKey.Backspace && firstPass.Length > 0)
+                            {
+                                Console.Write("\b \b");
+                                firstPass = firstPass[0..^1];
+                            }
+                            else if (!char.IsControl(keyInfo.KeyChar))
+                            {
+                                Console.Write("*");
+                                firstPass += keyInfo.KeyChar;
+                            }
+                        } while (key != ConsoleKey.Enter);
+
+                        Console.WriteLine($"\nChose [Y|n] to confirm or decline your choice...\nInput:");
+                        while (check == null)
+                        {
+                            check = Console.ReadLine();
+                        }
+
+                        if (check.Equals("Y") || check.Equals("y"))
+                        {
+                            checkChange = true;
+                            user.password = BCryptNet.HashPassword(firstPass);
+                            if (db.UpdateUserData(user))
+                            {
+                                Console.WriteLine($"You successfully changed your Password.");
+                            }
+                            else
+                            {
+                                Console.WriteLine($"Something went wrong!");
+                            }
+                            user = db.UpdatedUser(user);
+                        }
+                    }
+                }
+                else if (userInput.Equals("Quit"))
+                {
+                    Console.Clear();
+                    exit = false;
+                    Console.WriteLine($"{UniqueUsername} quit Profile-Manager.");
+                    return user;
+                }
+                else
+                {
+                    Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                    Console.ReadLine();
+                }
+                Console.Clear();
+                return user;
+            } while (exit);
         }
 
         public void PrintScoreboard()
@@ -315,6 +452,7 @@ namespace MonsterTradingCardGame.Classes
             string checkInput = null;
             string userInput = null;
             bool exit = true;
+            const int cost = 5;
             do
             {
                 userInput = null;
@@ -365,7 +503,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        db.ReduceUserCoins(this);
+                        db.ReduceUserCoins(this, cost);
                         return db.UpdatedUser(this);
                     }
                 }
@@ -377,7 +515,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        db.ReduceUserCoins(this);
+                        db.ReduceUserCoins(this, cost);
                         return db.UpdatedUser(this);
                     }
                 }
@@ -389,7 +527,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        db.ReduceUserCoins(this);
+                        db.ReduceUserCoins(this, cost);
                         return db.UpdatedUser(this);
                     }
                 }
@@ -401,7 +539,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        db.ReduceUserCoins(this);
+                        db.ReduceUserCoins(this, cost);
                         return db.UpdatedUser(this);
                     }
                 }
@@ -413,7 +551,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        db.ReduceUserCoins(this);
+                        db.ReduceUserCoins(this, cost);
                         return db.UpdatedUser(this);
                     }
                 }
@@ -430,8 +568,257 @@ namespace MonsterTradingCardGame.Classes
         }
         public User Trade(User user)
         {
-            Console.WriteLine($"Trade shit here");
+            string userInput = null;
+            bool exit = true;
+
+            do
+            {
+                userInput = null;
+                Console.Clear();
+                Console.WriteLine($"Trade-Manager\nYou can offer a Trade for a Card which is not in your Deck or check out the Trades of other User");
+
+
+                Console.WriteLine("Choose:\n Make   -> create a new Trade-offer for a Card or Coins\n Show   -> list the Offers other Users created and get yourself some new Cards\n Quit   -> quit the Trade & go back to the shop\nInput:");
+                while (userInput == null)
+                {
+                    userInput = Console.ReadLine();
+                }
+
+                if (userInput.Equals("Quit"))
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{UniqueUsername} quit Trade-Manager.");
+                    Console.ReadLine();
+                    exit = true;
+                    return user;
+                }
+
+                if (userInput.Equals("Make"))
+                {
+                    user = MakeTrade(this);
+                }
+                else if (userInput.Equals("Show"))
+                {
+                    user = ShowTrades(this);
+                }
+                else
+                {
+                    Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                user = db.UpdatedUser(this);
+            } while (exit);
             return user;
+        }
+
+        public User MakeTrade(User user)
+        {
+            string chosenIndex = null;
+            string userInput = null;
+            bool exit = true;
+
+            List<Cards> tradeableCardsList = db.TradeAbleCards(this);
+            if (tradeableCardsList.Count <= 0)
+            {
+                Console.WriteLine($"You have no Cards to Trade!");
+                Console.ReadLine();
+                return user;
+            }
+            do
+            {
+                userInput = null;
+                chosenIndex = null;
+                Console.Clear();
+                Console.WriteLine($"Trade-Offer-Manager\nYou can offer a Trade for a Card which is not in your Play-Deck");
+
+                Console.WriteLine($"Choose a Card to trade by its Index!");
+                PrintAllCardDeck(tradeableCardsList);
+                Console.Write("Index:");
+                chosenIndex = Console.ReadLine();
+                int chosenCard = -1;
+                int cardID = -1;
+                if (Int32.TryParse(chosenIndex, out chosenCard))
+                {
+                    if (chosenCard < 0 || chosenCard > tradeableCardsList.Count)
+                    {
+                        Console.WriteLine("Wrong Index!\nTry again...");
+                        chosenCard = -1;
+                    }
+
+                    cardID = tradeableCardsList[chosenCard].CardID;
+                }
+                else
+                {
+                    Console.WriteLine($"Only Numeric Inputs in the Range of the indices");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                Console.WriteLine("Choose what do you want to trade your card for\n Spell  -> a Spell Card where you can ask for a min Dmg\n Monster-> a Monster Card where you can ask for a min Dmg\n Coins  -> a chosen amount of Coins\n Quit   -> quit the Trade & go back to the shop\nInput:");
+                while (userInput == null)
+                {
+                    userInput = Console.ReadLine();
+                }
+
+                if (userInput.Equals("Quit"))
+                {
+                    Console.Clear();
+                    Console.WriteLine($"{UniqueUsername} quit Trade-Offer-Manager.");
+                    Console.ReadLine();
+                    exit = true;
+                    return user;
+                }
+
+                int tradeType = -1;
+                int toTradeAmt = -1;
+                if (userInput.Equals("Spell"))
+                {
+                    tradeType = (int)CardTypesEnum.TradeTypeEnum.Spell;
+                }
+                else if (userInput.Equals("Monster"))
+                {
+                    tradeType = (int)CardTypesEnum.TradeTypeEnum.Monster;
+                }
+                else if (userInput.Equals("Coins"))
+                {
+                    tradeType = (int)CardTypesEnum.TradeTypeEnum.Coins;
+                }
+                else
+                {
+                    Console.WriteLine("Wrong Input!\nPress any key to try again...\n");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                if (userInput.Equals("Spell") || userInput.Equals("Monster"))
+                {
+                    Console.WriteLine($"What is the minimal Damage a Card has to have for the Trade to be successful");
+                }
+                else
+                {
+                    Console.WriteLine($"What is the Price of the Card in Coins you want for the Trade to be successful");
+                }
+
+                
+                while (toTradeAmt <= 0)
+                {
+                    Console.Write($"Input:");
+                    Int32.TryParse(Console.ReadLine(), out toTradeAmt);
+                    if (toTradeAmt <= 0)
+                    {
+                        Console.WriteLine($"Your Value is invalid!\nTry again with a numeric Value > 0...\n");
+                    }
+                }
+
+                if (chosenCard >= 0 && tradeType is >= 0 and <= 3 && toTradeAmt > 0)
+                {
+                    db.UpdateTrade(this, cardID, true);
+                    db.CreateCardTrade(this, cardID, tradeType, toTradeAmt);
+                    exit = false;
+                    break;
+                }
+
+                user = db.UpdatedUser(this);
+            } while (exit);
+            return user;
+        }
+        
+        public User ShowTrades(User user)
+        {
+            user = db.UpdatedUser(this);
+            string chosenIndex = null;
+            string userInput = null;
+            bool exit = true;
+
+            List<TradeHelper> tradeableCardsList = db.GetAllTrades(this);
+            if (tradeableCardsList.Count <= 0)
+            {
+                Console.WriteLine($"There are NO Trades available!");
+                Console.ReadLine();
+                return user;
+            }
+            do
+            {
+                userInput = null;
+                chosenIndex = null;
+                Console.Clear();
+                Console.WriteLine($"Trade-Manager\nYou can offer a Trade for a Card which is not in your Deck or check out the Trades of other User");
+
+                Console.WriteLine($"Choose a Card to trade by its Index!");
+                int index = 0;
+                foreach (var helper in tradeableCardsList)
+                {
+                    Console.WriteLine($"Index {index} -> {helper.TradeCard.CardType.ToString()}: {helper.TradeCard.CardElement.ToString()} {helper.TradeCard.CardName} is trade-able for " + (((int)helper.TradeType < 2) ? $"a {helper.TradeType.ToString()} with at least {helper.TradeAmnt} Damage." : $"{helper.TradeAmnt} {helper.TradeType.ToString()}."));
+                    index++;
+                }
+                Console.Write("Index:");
+                chosenIndex = Console.ReadLine();
+                int chosenCard = -1;
+                if (Int32.TryParse(chosenIndex, out chosenCard))
+                {
+                    if (chosenCard < 0 || chosenCard > tradeableCardsList.Count)
+                    {
+                        Console.WriteLine("Wrong Index!\nTry again...");
+                        chosenCard = -1;
+                        continue;
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"Only Numeric Inputs in the Range of the indices");
+                    Console.ReadLine();
+                    continue;
+                }
+
+                string checkInput = null;
+                Console.WriteLine($"You chose the Card {tradeableCardsList[chosenCard].TradeCard.CardName} at Index {chosenCard}.\nChose [Y|n] to confirm or decline your choice...\nInput:");
+                while (checkInput == null)
+                {
+                    checkInput = Console.ReadLine();
+                }
+
+                if (!checkInput.Equals("Y") && !checkInput.Equals("y"))
+                {
+                    Console.WriteLine($"You dismissed the Trade!");
+                    Console.ReadLine();
+                    exit = true;
+                    return user;
+                }
+
+                if ((int) tradeableCardsList[chosenCard].TradeType >= 2)
+                {
+                    if (db.CheckCoins(this) > tradeableCardsList[chosenCard].TradeAmnt)
+                    {
+                        Console.WriteLine($"You have {db.CheckCoins(this)} Coins, do you want to buy the {tradeableCardsList[chosenCard].TradeCard.CardType.ToString()} {tradeableCardsList[chosenCard].TradeCard.CardElement.ToString()} {tradeableCardsList[chosenCard].TradeCard.CardName} for {tradeableCardsList[chosenCard].TradeAmnt} Coins?\nChose [Y|n] to confirm or decline your choice...\nInput:");
+                        string confirm = null;
+                        while (confirm == null)
+                        {
+                            confirm = Console.ReadLine();
+                        }
+
+                        if (!confirm.Equals("Y") && !confirm.Equals("y"))
+                        {
+                            Console.WriteLine($"You dismissed the Trade!");
+                            Console.ReadLine();
+                            exit = true;
+                            return user;
+                        }
+                       
+                        db.ConfirmedTrade(this, tradeableCardsList[chosenCard].TradeUser.UserID, tradeableCardsList[chosenCard].TradeCard.CardID);
+                        db.ReduceUserCoins(this, tradeableCardsList[chosenCard].TradeAmnt);
+                        db.IncreaseUserCoins(tradeableCardsList[chosenCard].TradeUser, tradeableCardsList[chosenCard].TradeAmnt);
+                        db.DeleteTradeOffer(tradeableCardsList[chosenCard]);
+                        user = db.UpdatedUser(this);
+                        return user;
+                    }
+                }
+
+                user = db.UpdatedUser(this);
+            } while (exit);
+            return user;
+
         }
     }
 }

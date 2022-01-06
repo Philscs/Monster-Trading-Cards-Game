@@ -14,5 +14,12 @@
             Monster,
             Spell
         }
+
+        public enum TradeTypeEnum
+        {
+            Monster,
+            Spell,
+            Coins
+        }
     }
 }

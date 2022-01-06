@@ -6,7 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="ToTestFunctions\" />
+    <Compile Remove="ToTestFunctions\**" />
+    <EmbeddedResource Remove="ToTestFunctions\**" />
+    <None Remove="ToTestFunctions\**" />
   </ItemGroup>
 
   <ItemGroup>

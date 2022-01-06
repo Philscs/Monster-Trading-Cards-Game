@@ -1,67 +1,82 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="MonsterTradingCardGame.Classes.Battles" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="5.5" Y="1.5" Width="1.5" />
+    <Position X="2.75" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAQCAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Classes\Battles.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="MonsterTradingCardGame.Classes.Cards" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="7.25" Y="1.5" Width="1.5" />
+    <Position X="4.5" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAggAAAAAAAAAAAAAAAQ=</HashCode>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAggAAAAAAAAAAAgAAAQ=</HashCode>
       <FileName>Classes\Cards.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="MonsterTradingCardGame.Dictionary.GameDictionary" Collapsed="true">
-    <Position X="5.5" Y="2.5" Width="1.5" />
+  <Class Name="MonsterTradingCardGame.Classes.Menu" Collapsed="true">
+    <Position X="8" Y="6" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAoACAAIAAAAAAAAAAAAAACCEAAAAAAAAAAA=</HashCode>
+      <HashCode>GAQAAAAAAAAQAABAAgAAAgBAAAQAAAgAAAAAAAAAAAA=</HashCode>
+      <FileName>Classes\Menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="MonsterTradingCardGame.Classes.User" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="6.25" Y="6" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAQCAAAAQAAAAAAAJCAgBAACMAQIhAQCQEgASAAA=</HashCode>
+      <FileName>Classes\User.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="MonsterTradingCardGame.Dictionary.GameDictionary" Collapsed="true">
+    <Position X="2.75" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CQAAAAAAAIBAAAICAAAAAAAAIAAAAAAEAAAAAAQAAAA=</HashCode>
       <FileName>Dictionary\GameDictionary.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="MonsterTradingCardGame.Enum.CardTypesEnum" Collapsed="true">
-    <Position X="9" Y="1.5" Width="1.5" />
+    <Position X="4.5" Y="4" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Enum\CardTypesEnum.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="MonsterTradingCardGame.PostgreDB.DBConn" Collapsed="true">
+    <Position X="4.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAgEAAAABCBYAAGAACAgAAABAgAAAAQBDAgAEAAAAAE=</HashCode>
+      <FileName>PostgreDB\DBConn.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Class Name="MonsterTradingCardGame.Program" Collapsed="true">
-    <Position X="7.25" Y="2.5" Width="1.5" />
+    <Position X="4.5" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Program.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="MonsterTradingCardGame.Interfaces.IBattles" Collapsed="true">
-    <Position X="5.5" Y="3.75" Width="1.5" />
+    <Position X="2.75" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Interfaces\IBattles.cs</FileName>
     </TypeIdentifier>
   </Interface>
   <Interface Name="MonsterTradingCardGame.Interfaces.ICards" Collapsed="true">
-    <Position X="7.25" Y="3.75" Width="1.5" />
+    <Position X="4.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAAAAAAAAAAAAggAAAAAAAAAAAAAAAQ=</HashCode>
       <FileName>Interfaces\ICards.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="MonsterTradingCardGame.Interfaces.ICardStack" Collapsed="true">
-    <Position X="9" Y="3.75" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Interfaces\ICardStack.cs</FileName>
-    </TypeIdentifier>
-  </Interface>
   <Interface Name="MonsterTradingCardGame.Interfaces.IUser" Collapsed="true">
-    <Position X="5.5" Y="4.5" Width="1.5" />
+    <Position X="6.25" Y="5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAACAAAAAAAAACAAACAAAAQAAA=</HashCode>
+      <HashCode>AAAAAQCAAAAAAAAAAAABCAABAAAAAAABAQCQAgAQAAA=</HashCode>
       <FileName>Interfaces\IUser.cs</FileName>
     </TypeIdentifier>
   </Interface>
