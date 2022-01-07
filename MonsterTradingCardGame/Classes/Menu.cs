@@ -7,7 +7,7 @@ using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace MonsterTradingCardGame.Classes
 {
-    class Menu
+    public class Menu
     {
         private string _userInput;
         DBConn db = new DBConn();
@@ -123,7 +123,7 @@ namespace MonsterTradingCardGame.Classes
             }
             else
             {
-                NoUser();
+                Console.WriteLine(NoUser());
             }
             Console.ReadLine();
         }
@@ -138,6 +138,7 @@ namespace MonsterTradingCardGame.Classes
                     Battles battles = new Battles();
                     if (enemyUser != null && enemyUser.UserPlayCardStack.Count == 4 && user.UserID != enemyUser.UserID)
                     {
+                        Console.Clear();
                         battles.Battle(user, enemyUser);
                         user = db.UpdatedUser(user);
 
@@ -158,7 +159,7 @@ namespace MonsterTradingCardGame.Classes
             }
             else
             {
-                NoUser();
+                Console.WriteLine(NoUser());
             }
 
             return user;
@@ -211,7 +212,7 @@ namespace MonsterTradingCardGame.Classes
             }
             else
             {
-                NoUser();
+                Console.WriteLine(NoUser());
             }
             Console.ReadLine();
         }
@@ -258,7 +259,7 @@ namespace MonsterTradingCardGame.Classes
             }
             else
             {
-                NoUser();
+                Console.WriteLine(NoUser());
             }
             Console.ReadLine();
             return null;
@@ -314,9 +315,10 @@ namespace MonsterTradingCardGame.Classes
             return null;
         }
 
-        public void NoUser()
+        public string NoUser()
         {
-            Console.WriteLine("No User is logged in, please Login first!");
+            string NoUser = "No User is logged in, please Login first!";
+            return NoUser;
         }
     }
 }

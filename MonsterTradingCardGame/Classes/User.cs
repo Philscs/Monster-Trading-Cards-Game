@@ -12,7 +12,7 @@ using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace MonsterTradingCardGame.Classes
 {
-    class User : IUser
+    public class User : IUser
     {
         private DBConn db = new DBConn();
         public User()
@@ -616,7 +616,6 @@ namespace MonsterTradingCardGame.Classes
 
         public User MakeTrade(User user)
         {
-            string chosenIndex = null;
             string userInput = null;
             bool exit = true;
 
@@ -630,14 +629,13 @@ namespace MonsterTradingCardGame.Classes
             do
             {
                 userInput = null;
-                chosenIndex = null;
                 Console.Clear();
                 Console.WriteLine($"Trade-Offer-Manager\nYou can offer a Trade for a Card which is not in your Play-Deck");
 
                 Console.WriteLine($"Choose a Card to trade by its Index!");
                 PrintAllCardDeck(tradeableCardsList);
                 Console.Write("Index:");
-                chosenIndex = Console.ReadLine();
+                string chosenIndex = Console.ReadLine();
                 int chosenCard = -1;
                 int cardID = -1;
                 if (Int32.TryParse(chosenIndex, out chosenCard))
@@ -729,8 +727,6 @@ namespace MonsterTradingCardGame.Classes
         public User ShowTrades(User user)
         {
             user = db.UpdatedUser(this);
-            string chosenIndex = null;
-            string userInput = null;
             bool exit = true;
 
             List<TradeHelper> tradeableCardsList = db.GetAllTrades(this);
@@ -742,8 +738,6 @@ namespace MonsterTradingCardGame.Classes
             }
             do
             {
-                userInput = null;
-                chosenIndex = null;
                 Console.Clear();
                 Console.WriteLine($"All-Trades\nCheck out the Trades of other User");
 
@@ -755,7 +749,7 @@ namespace MonsterTradingCardGame.Classes
                     index++;
                 }
                 Console.Write("Index:");
-                chosenIndex = Console.ReadLine();
+                string chosenIndex = Console.ReadLine();
                 int chosenCard = -1;
                 if (Int32.TryParse(chosenIndex, out chosenCard))
                 {

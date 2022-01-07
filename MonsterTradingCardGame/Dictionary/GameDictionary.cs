@@ -38,21 +38,18 @@ namespace MonsterTradingCardGame.Dictionary
         {
             this.NotSpecialGameDictionary.Add("Goblin", "Dragon");
             this.NotSpecialGameDictionary.Add("Orc", "Wizard");
-            this.NotSpecialGameDictionary.Add("Knights", "Water Spell");
+            this.NotSpecialGameDictionary.Add("Knights", "WaterSpell");
             this.NotSpecialGameDictionary.Add("Spell", "Kraken");
-            this.NotSpecialGameDictionary.Add("Dragon", "Fire Elves");
-
-
-            this.NotSpecialGameDictionary.Add("Wizard", "Cock");
+            this.NotSpecialGameDictionary.Add("Dragon", "FireElves");
         }
 
         private void InitializeSpecialtiesDictionary()
         {
             this.SpecialGameDictionary.Add("Dragon", "Goblin");
             this.SpecialGameDictionary.Add("Wizard", "Orc");
-            this.SpecialGameDictionary.Add("Water Spell", "Knights");
+            this.SpecialGameDictionary.Add("WaterSpell", "Knights");
             this.SpecialGameDictionary.Add("Kraken", "Spell"); 
-            this.SpecialGameDictionary.Add("Fire Elves", "Dragon");
+            this.SpecialGameDictionary.Add("FireElves", "Dragon");
         }
     }
 }

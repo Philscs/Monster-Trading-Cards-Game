@@ -16,7 +16,7 @@ namespace MonsterTradingCardGame
             Menu menu = new Menu();
 
             gameDictionary.InitializeAllDictionaries();
-           
+
             menu.UserMenu();
         }
     }

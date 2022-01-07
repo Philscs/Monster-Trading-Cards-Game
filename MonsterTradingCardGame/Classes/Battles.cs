@@ -11,12 +11,11 @@ using MonsterTradingCardGame.PostgreDB;
 
 namespace MonsterTradingCardGame.Classes
 {
-    class Battles : IBattles
+    public class Battles : IBattles
     {
-        private DBConn db = new DBConn();
+        private readonly DBConn db = new();
         public void Battle(User user1, User user2)
         {
-            Console.Clear();
             bool endOfBattle = false;
             int rounds = 0;
             var random = new Random();
@@ -59,7 +58,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        gameCard1Dmg = gameCard1Dmg * 1.5;
+                        gameCard1Dmg *= 1.5;
                     }
                     Arch1 = false;
                 }
@@ -72,7 +71,7 @@ namespace MonsterTradingCardGame.Classes
                     }
                     else
                     {
-                        gameCard2Dmg = gameCard2Dmg * 1.5;
+                        gameCard2Dmg *= 1.5;
                     }
                     Arch2 = false;
                 }
@@ -140,12 +139,7 @@ namespace MonsterTradingCardGame.Classes
             db.UpdateLos(loser);
         }
 
-        private int CheckAngel(User user, bool arch, int calcedDMG)
-        {
-
-        }
-
-        private double CheckDmgMulti(Cards card1, Cards card2)
+        public double CheckDmgMulti(Cards card1, Cards card2)
         {
             GameDictionary gameDictionary = new GameDictionary();
             gameDictionary.InitializeAllDictionaries();
@@ -156,11 +150,11 @@ namespace MonsterTradingCardGame.Classes
             {
                 if (gameDictionary.EffectiveGameDictionary[$"{card1.CardElement}"] == card2.CardElement.ToString())
                 {
-                    Console.WriteLine($"{card1.CardName} {card1.CardElement}  is effective vs {card2.CardName} {card2.CardElement}");
+                    Console.WriteLine($"{card1.CardName} {card1.CardElement} is effective vs {card2.CardName} {card2.CardElement}");
                     multi = 2;
                 }else if (gameDictionary.NotEffectiveGameDictionary[$"{card1.CardElement}"] == $"{card2.CardElement}")
                 {
-                    Console.WriteLine($"{card1.CardName} {card1.CardElement}  is NOT effective vs {card2.CardName} {card2.CardElement}");
+                    Console.WriteLine($"{card1.CardName} {card1.CardElement} is NOT effective vs {card2.CardName} {card2.CardElement}");
                     multi = 0.5;
                 }
             }
@@ -172,7 +166,7 @@ namespace MonsterTradingCardGame.Classes
                     card2.CardElement + card2.CardName)
                 {
                     Console.WriteLine(
-                        $"{card1.CardName} {card1.CardElement}  has NO CHANCE vs {card2.CardName} {card2.CardElement}");
+                        $"{card1.CardName} {card1.CardElement} has NO CHANCE vs {card2.CardName} {card2.CardElement}");
                     multi = 0;
                 }
             }
@@ -180,7 +174,7 @@ namespace MonsterTradingCardGame.Classes
             return multi;
         }
 
-        void EndOfGameHeader()
+        private static void EndOfGameHeader()
         {
             Console.WriteLine("  ........          ....         ....         ....  ............. ");
             Console.WriteLine(" ..........        ......        .....       .....  ............. ");
