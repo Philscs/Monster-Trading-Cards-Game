@@ -1126,7 +1126,7 @@ namespace MonsterTradingCardGame.PostgreDB
 
                     cardCmd.Parameters.AddWithValue("p1", NpgsqlDbType.Bigint, i);
                     cardCmd.Parameters.AddWithValue("p2", NpgsqlDbType.Bigint, (int)tradeHelper.TradeType);
-                    cardCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Bigint, i);
+                    cardCmd.Parameters.AddWithValue("p3", NpgsqlDbType.Bigint, tradeHelper.TradeAmnt);
 
                     dr = cardCmd.ExecuteReader();
                     while (dr.Read())

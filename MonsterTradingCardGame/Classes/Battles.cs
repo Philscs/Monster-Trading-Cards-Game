@@ -133,9 +133,11 @@ namespace MonsterTradingCardGame.Classes
 
         private void BattleWinning(User winner, User loser, int rounds)
         {
+            int winCoins = 1;
             EndOfGameHeader();
             Console.WriteLine($"{winner.UniqueUsername} has won the Battle in {rounds} rounds vs {loser.UniqueUsername}!\n{winner.UniqueUsername} gained +3 Elo, while {loser.UniqueUsername} lost -5 Elo.");
             db.UpdateWin(winner);
+            db.IncreaseUserCoins(winner, winCoins);
             db.UpdateLos(loser);
         }
 
