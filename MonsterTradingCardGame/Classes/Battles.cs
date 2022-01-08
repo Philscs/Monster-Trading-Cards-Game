@@ -48,17 +48,18 @@ namespace MonsterTradingCardGame.Classes
                 gameCard1Dmg = playCard1.CardDamage * CheckDmgMulti(playCard1, playCard2);
                 gameCard2Dmg = playCard2.CardDamage * CheckDmgMulti(playCard2, playCard1);
 
+                double ArchMulti = 1.5;
                 //Unique Feature 'Archangel'
                 if (gameUser1.UserPlayCardStack.Count == 1 && Arch1)
                 {
                     Console.WriteLine($"{gameUser1.UniqueUsername} triggered 'Archangel' his Card deals 50% more Damage this Round...");
                     if (playCard1.CardDamage > gameCard1Dmg)
                     {
-                        gameCard1Dmg = playCard1.CardDamage * 1.5;
+                        gameCard1Dmg = playCard1.CardDamage * ArchMulti;
                     }
                     else
                     {
-                        gameCard1Dmg *= 1.5;
+                        gameCard1Dmg *= ArchMulti;
                     }
                     Arch1 = false;
                 }
@@ -67,11 +68,11 @@ namespace MonsterTradingCardGame.Classes
                     Console.WriteLine($"{gameUser2.UniqueUsername} triggered 'Archangel' his Card deals 50% more Damage this Round...");
                     if (playCard2.CardDamage > gameCard2Dmg)
                     {
-                        gameCard2Dmg = playCard2.CardDamage * 1.5;
+                        gameCard2Dmg = playCard2.CardDamage * ArchMulti;
                     }
                     else
                     {
-                        gameCard2Dmg *= 1.5;
+                        gameCard2Dmg *= ArchMulti;
                     }
                     Arch2 = false;
                 }
