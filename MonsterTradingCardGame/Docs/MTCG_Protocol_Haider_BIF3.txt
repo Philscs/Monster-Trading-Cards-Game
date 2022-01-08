@@ -1,0 +1,107 @@
+Haider Philipp if20b097	WS2021/22 BIF3
+
+Protocol 
+
+Monster Trading Card Game
+
+
+
+
+Technical Steps
+
+Das Project wurde Iterativ erarbeitet, angefangen wurde mit einem Klassendiagram, um einen Überblick über das Programm und die internen Zusammenhänge der Klassen zu bekommen.
+Anhand des Diagrames wurden dann Interfaces mit Abstrakten Funktionen geschrieben, so dass alle Grundlegenden Klassen und Funktionen abgedeckt sind.
+Die Interfaces wurden genutzt, um die Klassen zu implementieren und die abstrakten Funktionen auszuschreiben.
+In der Entwicklung wurde anfangs mit in-Programm-DB gearbeitet, um die Implementierung der Funktionen zu vereinfachen, die in-Programm-DB wurde dann mit einer Postgresql-DB ausgetauscht. 
+
+Probleme gab es keine Erwähnenswerten, es gab nur ein Paar klein Logik Fehler und Funktionen, die im Laufe der Entwicklung des Programms abgeändert werden mussten.
+Die Fehler wurden entweder direkt während der Entwicklung entdeckt bzw. beim ausführlichen Testen des Programmes.
+
+Für die Sicherheit des Programmes wird ein Token beim Login (Registrierung) abgefragt und nur mit dem korrekten Token kann der User das Programm korrekt benutzen und kann Battles ausführen und den Shop benutzten.
+Zusätzlich sind alle SQL-statements mit Preparedstatements abgesichert und diese wurden nochmals mit explizit mit Variablentypen abgesichert und benötigen den Token des Users. 
+
+
+
+
+Unit Tests
+
+Besonders ausgiebig wurden die kritischen Teile des Battles getestet.
+Ein großer Teil der Tests bezieht sich auf die korrekte Berechnung des Schadens in dem Kampf, dass der User keine Nachteile hat und den Kampf wegen falschen Berechnungen verliert, und sein Elo sinkt.
+Dabei wurde ein besonderes Augenmerk auf die Sonderfälle und Interaktionen zwischen den Elementen, wenn Spells dabei sind, gelegt.
+Vor allem aus dem korrekten Auslesen und Vergleichen aus dem Dictionary mit den tatsächlichen Karten, wenn eine der beiden Karten ein Spell ist oder sich in dem Dictionary befindet.
+Der Grund für diese extensiven Tests ist, dass das Battle das Hauptaugenmerk des Programms ist und diese ohne Probleme und Bugs funktionieren sollte, dass der Ärger der User minimal bleibt bei auftretenden Bugs.
+Weiters wurden einfache Ausgaben und Funktionen der Userklasse überprüft, dass auch bei diesen gewährleistet werden kann, dass diese korrekt Funktionieren.
+
+
+
+
+Time Tracking
+
+1. Commit	35min
+a. Erstellen des Projekts	
+b. Erstellen des Klassendiagrams
+2. Commit 35min
+a. Erstellen der Interfaces
+b. Einbinden des Klassendiagrams
+3. Commit 30min
+a. Erstellen der Enums
+b. Änderung an Interfaces
+4. Commit 150min
+a. Implementierung der Klassen anhand der Interfaces
+b. Erstellen des Dictionary
+c. Erstellen von Testdaten
+d. Änderung des Programmdesigns in der Cards-Klasse
+5. Commit 180min
+a. Funktionen in Klassen implementiert
+b. Programm Menü implementiert
+6. Commit 120min
+a. Erweiterung des Menüs
+b. Erweiterung der User-Klasse
+c. Implementierung der Battle-Klasse
+7. Commit 60min
+a. Erweiterung der Battle-Klasse
+b. Erweiterung des Dictionary
+c. Änderungen der User-Klasse
+8. Commit 45min
+a. Erweiterung der Battle-Logic
+9. Commit 150min
+a. Implementierung der Postgresql-DB
+b. Erweiterung des Menüs
+c. Erweiterung der User-Klasse
+10. Commit 75min
+a. Erweiterung der DB-Klasse
+b. Erweiterung der User-Klasse
+c. Entfernen der Testdaten
+11.  Commit 120min
+a. Finalisierung der Battlelogic
+b. Erweiterung der DB-Klasse
+c. Änderungen in der User-Klasse
+12. Commit 150min
+a. Implementierung der Trades
+b. Erweiterung der DB-Klasse
+c. Erweiterung der User-Klasse
+13. Commit 145min
+a. Implementierung TradeHelper-Klasse
+b. Erweiterung der DB-Klasse
+c. Erweiterung der Enums
+14.  Commit 60min
+a. Finalisierung der Battle-Klasse
+b. Finalisierung der DB-Klasse
+c. Finalisierung der User-Klasse
+15.  Commit 120min
+a. Implementierung der UnitTests
+16.  Commit 10min
+a. Bug-Fixes
+17.  Commit 15min
+a. Magic-Number
+
+
+Zeit in Minuten für das Projekt: 	1500min
+      Zeit in Stunden:			25h
+
+
+
+
+
+
+
